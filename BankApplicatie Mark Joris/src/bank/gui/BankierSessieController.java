@@ -5,6 +5,7 @@
  */
 package bank.gui;
 
+import bank.bankieren.Rekening;
 import bank.bankieren.IRekening;
 import bank.bankieren.Money;
 import bank.internettoegang.IBalie;
@@ -13,6 +14,8 @@ import fontys.util.InvalidSessionException;
 import fontys.util.NumberDoesntExistException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,7 +32,7 @@ import javafx.scene.control.TextField;
  *
  * @author frankcoenen
  */
-public class BankierSessieController implements Initializable {
+public class BankierSessieController implements Observer, Initializable {
 
     @FXML
     private Hyperlink hlLogout;
@@ -61,6 +64,8 @@ public class BankierSessieController implements Initializable {
         IRekening rekening = null;
         try {
             rekening = sessie.getRekening();
+            Rekening yr = (Rekening)rekening;
+            yr.addObserver(this);
             tfAccountNr.setText(rekening.getNr() + "");
             tfBalance.setText(rekening.getSaldo() + "");
             String eigenaar = rekening.getEigenaar().getNaam() + " te "
@@ -110,5 +115,12 @@ public class BankierSessieController implements Initializable {
             e1.printStackTrace();
             taMessage.setText(e1.getMessage());
         }
+    }
+
+    @Override
+    public void update(Observable o, Object arg) 
+    {
+         IRekening rekening = (IRekening) arg;
+         tfBalance.setText(rekening.getSaldo() + "");
     }
 }

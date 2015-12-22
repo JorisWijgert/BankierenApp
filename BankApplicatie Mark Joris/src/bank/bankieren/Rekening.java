@@ -1,6 +1,10 @@
 package bank.bankieren;
 
-class Rekening implements IRekeningTbvBank {
+import java.util.Observable;
+import javafx.beans.InvalidationListener;
+
+
+public class Rekening extends Observable implements IRekeningTbvBank  {
 
     private static final long serialVersionUID = 7221569686169173632L;
     private static final int KREDIETLIMIET = -10000;
@@ -68,6 +72,8 @@ class Rekening implements IRekeningTbvBank {
 
         if (isTransferPossible(bedrag)) {
             saldo = Money.sum(saldo, bedrag);
+            this.setChanged();
+            this.notifyObservers(this);
             return true;
         }
         return false;
@@ -77,4 +83,7 @@ class Rekening implements IRekeningTbvBank {
     public int getKredietLimietInCenten() {
         return KREDIETLIMIET;
     }
+
+
+    
 }

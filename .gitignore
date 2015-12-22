@@ -63,3 +63,10 @@ $RECYCLE.BIN/
 *.lnk
 /BankApplicatie Mark Joris/nbproject/private/
 /BankApplicatie Mark Joris/build/
+BankApplicatie Mark Joris/dist/BankApplicatie Mark Joris.html
+*.jnlp
+BankApplicatie Mark Joris/dist/web-files/dtjava.js
+*.png
+BankApplicatie Mark Joris/dist/web-files/javafx-loading-100x100.gif
+*.gif
+BankApplicatie Mark Joris/RaboBank.props

@@ -9,63 +9,67 @@ import bank.bankieren.Money;
 
 import fontys.util.InvalidSessionException;
 import fontys.util.NumberDoesntExistException;
+import java.rmi.NoSuchObjectException;
 
 public class Bankiersessie extends UnicastRemoteObject implements
-		IBankiersessie {
+        IBankiersessie {
 
-	private static final long serialVersionUID = 1L;
-	private long laatsteAanroep;
-	private int reknr;
-	private IBank bank;
+    private static final long serialVersionUID = 1L;
+    private long laatsteAanroep;
+    private int reknr;
+    private IBank bank;
 
-<span class="nc" id="L21">	public Bankiersessie(int reknr, IBank bank) throws RemoteException {</span>
-<span class="nc" id="L22">		laatsteAanroep = System.currentTimeMillis();</span>
-<span class="nc" id="L23">		this.reknr = reknr;</span>
-<span class="nc" id="L24">		this.bank = bank;</span>
-		
-<span class="nc" id="L26">	}</span>
+<span class="fc" id="L22">    public Bankiersessie(int reknr, IBank bank) throws RemoteException {</span>
+<span class="fc" id="L23">        laatsteAanroep = System.currentTimeMillis();</span>
+<span class="fc" id="L24">        this.reknr = reknr;</span>
+<span class="fc" id="L25">        this.bank = bank;</span>
 
-	public boolean isGeldig() {
-<span class="nc bnc" id="L29" title="All 2 branches missed.">		return System.currentTimeMillis() - laatsteAanroep &lt; GELDIGHEIDSDUUR;</span>
-	}
+<span class="fc" id="L27">    }</span>
 
-	@Override
-	public boolean maakOver(int bestemming, Money bedrag)
-			throws NumberDoesntExistException, InvalidSessionException,
-			RemoteException {
-		
-<span class="nc" id="L37">		updateLaatsteAanroep();</span>
-		
-<span class="nc bnc" id="L39" title="All 2 branches missed.">		if (reknr == bestemming)</span>
-<span class="nc" id="L40">			throw new RuntimeException(</span>
-					&quot;source and destination must be different&quot;);
-<span class="nc bnc" id="L42" title="All 2 branches missed.">		if (!bedrag.isPositive())</span>
-<span class="nc" id="L43">			throw new RuntimeException(&quot;amount must be positive&quot;);</span>
-		
-<span class="nc" id="L45">		return bank.maakOver(reknr, bestemming, bedrag);</span>
-	}
+    public boolean isGeldig() {
+<span class="fc bfc" id="L30" title="All 2 branches covered.">        return System.currentTimeMillis() - laatsteAanroep &lt; GELDIGHEIDSDUUR;</span>
+    }
 
-	private void updateLaatsteAanroep() throws InvalidSessionException {
-<span class="nc bnc" id="L49" title="All 2 branches missed.">		if (!isGeldig()) {</span>
-<span class="nc" id="L50">			throw new InvalidSessionException(&quot;session has been expired&quot;);</span>
-		}
-		
-<span class="nc" id="L53">		laatsteAanroep = System.currentTimeMillis();</span>
-<span class="nc" id="L54">	}</span>
+    @Override
+    public boolean maakOver(int bestemming, Money bedrag)
+            throws NumberDoesntExistException, InvalidSessionException,
+            RemoteException {
 
-	@Override
-	public IRekening getRekening() throws InvalidSessionException,
-			RemoteException {
+<span class="fc" id="L38">        updateLaatsteAanroep();</span>
 
-<span class="nc" id="L60">		updateLaatsteAanroep();</span>
-		
-<span class="nc" id="L62">		return bank.getRekening(reknr);</span>
-	}
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        if (reknr == bestemming) {</span>
+<span class="fc" id="L41">            throw new RuntimeException(</span>
+                    &quot;source and destination must be different&quot;);
+        }
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        if (!bedrag.isPositive()) {</span>
+<span class="fc" id="L45">            throw new RuntimeException(&quot;amount must be positive&quot;);</span>
+        }
 
-	@Override
-	public void logUit() throws RemoteException {
-<span class="nc" id="L67">		UnicastRemoteObject.unexportObject(this, true);</span>
-<span class="nc" id="L68">	}</span>
+<span class="fc" id="L48">        return bank.maakOver(reknr, bestemming, bedrag);</span>
+    }
+
+    private void updateLaatsteAanroep() throws InvalidSessionException, NoSuchObjectException {
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        if (!isGeldig()) {</span>
+<span class="fc" id="L53">            UnicastRemoteObject.unexportObject(this, true);</span>
+<span class="fc" id="L54">            throw new InvalidSessionException(&quot;session has been expired&quot;);</span>
+        }
+
+<span class="fc" id="L57">        laatsteAanroep = System.currentTimeMillis();</span>
+<span class="fc" id="L58">    }</span>
+
+    @Override
+    public IRekening getRekening() throws InvalidSessionException,
+            RemoteException {
+
+<span class="fc" id="L64">        updateLaatsteAanroep();</span>
+
+<span class="fc" id="L66">        return bank.getRekening(reknr);</span>
+    }
+
+    @Override
+    public void logUit() throws RemoteException {
+<span class="fc" id="L71">        UnicastRemoteObject.unexportObject(this, true);</span>
+<span class="fc" id="L72">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

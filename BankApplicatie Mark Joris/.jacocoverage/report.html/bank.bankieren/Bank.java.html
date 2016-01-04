@@ -50,32 +50,32 @@ public class Bank implements IBank {
 
 	public synchronized boolean maakOver(int source, int destination, Money money)
 			throws NumberDoesntExistException {
-<span class="nc bnc" id="L53" title="All 2 branches missed.">		if (source == destination)</span>
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">		if (source == destination)</span>
 <span class="nc" id="L54">			throw new RuntimeException(</span>
 					&quot;cannot transfer money to your own account&quot;);
-<span class="nc bnc" id="L56" title="All 2 branches missed.">		if (!money.isPositive())</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">		if (!money.isPositive())</span>
 <span class="nc" id="L57">			throw new RuntimeException(&quot;money must be positive&quot;);</span>
 
-<span class="nc" id="L59">		IRekeningTbvBank source_account = (IRekeningTbvBank) getRekening(source);</span>
-<span class="nc bnc" id="L60" title="All 2 branches missed.">		if (source_account == null)</span>
+<span class="fc" id="L59">		IRekeningTbvBank source_account = (IRekeningTbvBank) getRekening(source);</span>
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">		if (source_account == null)</span>
 <span class="nc" id="L61">			throw new NumberDoesntExistException(&quot;account &quot; + source</span>
 					+ &quot; unknown at &quot; + name);
 
-<span class="nc" id="L64">		Money negative = Money.difference(new Money(0, money.getCurrency()),</span>
+<span class="fc" id="L64">		Money negative = Money.difference(new Money(0, money.getCurrency()),</span>
 				money);
-<span class="nc" id="L66">		boolean success = source_account.muteer(negative);</span>
-<span class="nc bnc" id="L67" title="All 2 branches missed.">		if (!success)</span>
+<span class="fc" id="L66">		boolean success = source_account.muteer(negative);</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">		if (!success)</span>
 <span class="nc" id="L68">			return false;</span>
 
-<span class="nc" id="L70">		IRekeningTbvBank dest_account = (IRekeningTbvBank) getRekening(destination);</span>
-<span class="nc bnc" id="L71" title="All 2 branches missed.">		if (dest_account == null) </span>
+<span class="fc" id="L70">		IRekeningTbvBank dest_account = (IRekeningTbvBank) getRekening(destination);</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">		if (dest_account == null) </span>
 <span class="nc" id="L72">			throw new NumberDoesntExistException(&quot;account &quot; + destination</span>
 					+ &quot; unknown at &quot; + name);
-<span class="nc" id="L74">		success = dest_account.muteer(money);</span>
+<span class="fc" id="L74">		success = dest_account.muteer(money);</span>
 
-<span class="nc bnc" id="L76" title="All 2 branches missed.">		if (!success) // rollback</span>
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">		if (!success) // rollback</span>
 <span class="nc" id="L77">			source_account.muteer(money);</span>
-<span class="nc" id="L78">		return success;</span>
+<span class="fc" id="L78">		return success;</span>
 	}
 
 	@Override

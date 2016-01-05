@@ -69,20 +69,20 @@ public class BalieTest {
     
     @Test
     public void login(){
-        balie.openRekening("Tom", "Castenray", "Cavia");
-        balie.openRekening("Henk", "Oirlo", "Hamster");
-        balie.openRekening("Kees", "Valkenswaard", "Konijn");
-        balie.openRekening("fred", "Eindhoven", "fredje");
+        String inlogAccountcode1 = balie.openRekening("Tom", "Castenray", "Cavia");
+        String inlogAccountcode2 = balie.openRekening("Henk", "Oirlo", "Hamster");
+        String inlogAccountcode3 = balie.openRekening("Kees", "Valkenswaard", "Konijn");
+        String inlogAccountcode4 = balie.openRekening("fred", "Eindhoven", "fredje");
         try {
             assertNull("account niet gevonden", balie.logIn("", ""));
             assertNull("account niet gevonden", balie.logIn("Mark", ""));
             assertNull("password incorrect", balie.logIn("Tom", ""));
             assertNull("password incorrect", balie.logIn("Tom", "Hamster"));
             assertNull("password incorrect", balie.logIn("Kees", "fredje"));
-            assertNotNull("account niet ingelogd", balie.logIn("Tom", "Cavia"));
-            assertNotNull("account niet ingelogd", balie.logIn("Henk", "Hamster"));
-            assertNotNull("account niet ingelogd", balie.logIn("Kees", "Konijn"));
-            assertNotNull("account niet ingelogd", balie.logIn("fred", "fredje"));
+            assertNotNull("account niet ingelogd", balie.logIn(inlogAccountcode1, "Cavia"));
+            assertNotNull("account niet ingelogd", balie.logIn(inlogAccountcode2, "Hamster"));
+            assertNotNull("account niet ingelogd", balie.logIn(inlogAccountcode3, "Konijn"));
+            assertNotNull("account niet ingelogd", balie.logIn(inlogAccountcode4, "fredje"));
         } catch (RemoteException ex) {
             Logger.getLogger(BalieTest.class.getName()).log(Level.SEVERE, null, ex);
         }

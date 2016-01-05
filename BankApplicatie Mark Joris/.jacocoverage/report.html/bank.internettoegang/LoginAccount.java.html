@@ -7,14 +7,14 @@ public class LoginAccount implements ILoginAccount {
 	private String wachtwoord;
 	private int reknr;
 
-<span class="nc" id="L10">	public LoginAccount(String naam, String wachtwoord, int rekening) {</span>
-<span class="nc" id="L11">		this.naam = naam;</span>
-<span class="nc" id="L12">		this.wachtwoord = wachtwoord;</span>
-<span class="nc" id="L13">		this.reknr = rekening;</span>
-<span class="nc" id="L14">	}</span>
+<span class="fc" id="L10">	public LoginAccount(String naam, String wachtwoord, int rekening) {</span>
+<span class="fc" id="L11">		this.naam = naam;</span>
+<span class="fc" id="L12">		this.wachtwoord = wachtwoord;</span>
+<span class="fc" id="L13">		this.reknr = rekening;</span>
+<span class="fc" id="L14">	}</span>
 
 	public boolean checkWachtwoord(String wachtwoord) {
-<span class="nc" id="L17">		return this.wachtwoord.equals(wachtwoord);</span>
+<span class="fc" id="L17">		return this.wachtwoord.equals(wachtwoord);</span>
 	}
 
 	public String getNaam() {
@@ -22,7 +22,7 @@ public class LoginAccount implements ILoginAccount {
 	}
 
 	public int getReknr() {
-<span class="nc" id="L25">		return reknr;</span>
+<span class="fc" id="L25">		return reknr;</span>
 	}
 
 }

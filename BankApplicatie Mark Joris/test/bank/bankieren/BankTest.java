@@ -80,72 +80,74 @@ public class BankTest {
         assertEquals("Rekeningnummer is niet goed aangemaakt", 100000004, bank.openRekening("Mark", "Castenray"));
     }
 
-    
     @Test
-    public void testGetRekening(){
+    public void testGetRekening() {
         IRekening testRekening = new Rekening(100000000, new Klant("Joris", "Oploo"), "Euro");
         bank.openRekening("Joris", "Oploo");
         assertTrue("Rekeningen wordt niet goed opgehaald", testRekening.equals(bank.getRekening(100000000)));
     }
-    
+
     @Test
-    public void maakoverzelfnummer() throws RuntimeException
-    {
-      Money geld = new Money(20, "euro");
+    public void maakoverzelfnummer() throws RuntimeException {
+        Money geld = new Money(20, Money.EURO);
         try {
             bank.maakOver(100000001, 100000001, geld);
         } catch (NumberDoesntExistException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
     @Test
-    public void maakovernietpositief() throws RuntimeException
-    {
-      Money geld = new Money(-20, "euro");
+    public void maakovernietpositief() throws RuntimeException {
+        Money geld = new Money(-20, Money.EURO);
         try {
             bank.maakOver(100000001, 100000002, geld);
-        } catch (NumberDoesntExistException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    @Test
-    public void maakovernietbestaandown() throws NumberDoesntExistException
-    {
-      Money geld = new Money(20, "euro");
-        try {
-            bank.maakOver(100000001, 100000002, geld);
-        } catch (NumberDoesntExistException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    @Test
-    public void maakovernietbestaanddest() throws NumberDoesntExistException
-    {     
-      bank.openRekening("Joris", "Oploo");
-      Money geld = new Money(20, "euro");
-        try {
-            bank.maakOver(100000000, 100000002, geld);
         } catch (NumberDoesntExistException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
+    @Test(expected = NumberDoesntExistException.class)
+    public void maakovernullrekening() throws NumberDoesntExistException {
+        Money geld = new Money(20, Money.EURO);
+
+        bank.maakOver(12, 100000002, geld);
+
+    }
+
+    @Test(expected = NumberDoesntExistException.class)
+    public void maakovernietbestaandown() throws NumberDoesntExistException {
+        Money geld = new Money(20, Money.EURO);
+
+        bank.maakOver(100000001, 100000002, geld);
+
+    }
+
+    @Test(expected = NumberDoesntExistException.class)
+    public void maakovernietbestaanddest() throws NumberDoesntExistException {
+        bank.openRekening("Joris", "Oploo");
+        Money geld = new Money(20, Money.EURO);
+
+        bank.maakOver(100000000, 100000002, geld);
+
+    }
+
     @Test
-    public void maakover()
-    {
-      bank.openRekening("Joris", "Oploo");
-      bank.openRekening("Mark", "Castenray");
-      bank.openRekening("Tom", "Jones");
-      Money geld1 = new Money(20, "euro");
-      Money geld2 = new Money(100, "euro");
-      Money geld3 = new Money(40, "euro");
+    public void maakover() {
+        bank.openRekening("Joris", "Oploo");
+        bank.openRekening("Mark", "Castenray");
+        bank.openRekening("Tom", "Jones");
+        Money geld1 = new Money(20, Money.EURO);
+        Money geld2 = new Money(100, Money.EURO);
+        Money geld3 = new Money(40, Money.EURO);
+        Money geld4 = new Money(-20, Money.EURO);
         try {
-            assertTrue("niet overgemaakt",bank.maakOver(100000000, 100000001, geld1));
-            assertTrue("niet overgemaakt",bank.maakOver(100000000, 100000002, geld2));
-            assertTrue("niet overgemaakt",bank.maakOver(100000001, 100000002, geld3));
-            assertTrue("niet overgemaakt",bank.maakOver(100000002, 100000001, geld1));
-            assertTrue("niet overgemaakt",bank.maakOver(100000002, 100000000, geld2));
-            assertTrue("niet overgemaakt",bank.maakOver(100000001, 100000000, geld3));
+            assertTrue("niet overgemaakt", bank.maakOver(100000000, 100000001, geld1));
+            assertTrue("niet overgemaakt", bank.maakOver(100000000, 100000002, geld2));
+            assertTrue("niet overgemaakt", bank.maakOver(100000001, 100000002, geld3));
+            assertTrue("niet overgemaakt", bank.maakOver(100000002, 100000001, geld1));
+            assertTrue("niet overgemaakt", bank.maakOver(100000002, 100000000, geld2));
+            assertTrue("niet overgemaakt", bank.maakOver(100000001, 100000000, geld3));
         } catch (NumberDoesntExistException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }

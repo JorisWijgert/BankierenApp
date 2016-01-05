@@ -50,15 +50,15 @@ public class Bank implements IBank {
 
 	public synchronized boolean maakOver(int source, int destination, Money money)
 			throws NumberDoesntExistException {
-<span class="pc bpc" id="L53" title="1 of 2 branches missed.">		if (source == destination)</span>
-<span class="nc" id="L54">			throw new RuntimeException(</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">		if (source == destination)</span>
+<span class="fc" id="L54">			throw new RuntimeException(</span>
 					&quot;cannot transfer money to your own account&quot;);
-<span class="pc bpc" id="L56" title="1 of 2 branches missed.">		if (!money.isPositive())</span>
-<span class="nc" id="L57">			throw new RuntimeException(&quot;money must be positive&quot;);</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">		if (!money.isPositive())</span>
+<span class="fc" id="L57">			throw new RuntimeException(&quot;money must be positive&quot;);</span>
 
 <span class="fc" id="L59">		IRekeningTbvBank source_account = (IRekeningTbvBank) getRekening(source);</span>
-<span class="pc bpc" id="L60" title="1 of 2 branches missed.">		if (source_account == null)</span>
-<span class="nc" id="L61">			throw new NumberDoesntExistException(&quot;account &quot; + source</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">		if (source_account == null)</span>
+<span class="fc" id="L61">			throw new NumberDoesntExistException(&quot;account &quot; + source</span>
 					+ &quot; unknown at &quot; + name);
 
 <span class="fc" id="L64">		Money negative = Money.difference(new Money(0, money.getCurrency()),</span>

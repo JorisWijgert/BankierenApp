@@ -26,7 +26,7 @@ public class Balie extends UnicastRemoteObject implements IBalie {
 <span class="fc bfc" id="L26" title="All 2 branches covered.">		if (plaats.equals(&quot;&quot;))</span>
 <span class="fc" id="L27">			return null;</span>
 
-<span class="pc bpc" id="L29" title="1 of 4 branches missed.">		if (wachtwoord.length() &lt; 4 || wachtwoord.length() &gt; 8)</span>
+<span class="fc bfc" id="L29" title="All 4 branches covered.">		if (wachtwoord.length() &lt; 4 || wachtwoord.length() &gt; 8)</span>
 <span class="fc" id="L30">			return null;</span>
 
 <span class="fc" id="L32">		int nr = bank.openRekening(naam, plaats);</span>

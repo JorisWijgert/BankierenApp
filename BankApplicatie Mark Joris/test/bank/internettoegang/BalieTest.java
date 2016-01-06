@@ -61,6 +61,7 @@ public class BalieTest {
     assertNull("leeg invoerveld niet afgevangen", balie.openRekening("Tom", "Castenray", ""));
     assertNull("leeg invoerveld niet afgevangen", balie.openRekening("", "Castenray", "Cavia"));
     assertNull("leeg invoerveld niet afgevangen", balie.openRekening("Tom", "", "Cavia"));
+    assertNull("te lang wachtwoord niet afgevangen", balie.openRekening("Tom", "Castenray", "Cavia1234939"));
     assertNotNull("geen random getal teruggekregen", balie.openRekening("Tom", "Castenray", "Cavia"));
     assertNotNull("geen random getal teruggekregen", balie.openRekening("Henk", "Oirlo", "Hamster"));
     assertNotNull("geen random getal teruggekregen", balie.openRekening("Kees", "Valkenswaard", "Konijn"));

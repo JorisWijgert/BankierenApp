@@ -64,12 +64,12 @@ public class Bank implements IBank {
 <span class="fc" id="L64">		Money negative = Money.difference(new Money(0, money.getCurrency()),</span>
 				money);
 <span class="fc" id="L66">		boolean success = source_account.muteer(negative);</span>
-<span class="pc bpc" id="L67" title="1 of 2 branches missed.">		if (!success)</span>
-<span class="nc" id="L68">			return false;</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">		if (!success)</span>
+<span class="fc" id="L68">			return false;</span>
 
 <span class="fc" id="L70">		IRekeningTbvBank dest_account = (IRekeningTbvBank) getRekening(destination);</span>
-<span class="pc bpc" id="L71" title="1 of 2 branches missed.">		if (dest_account == null) </span>
-<span class="nc" id="L72">			throw new NumberDoesntExistException(&quot;account &quot; + destination</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">		if (dest_account == null) </span>
+<span class="fc" id="L72">			throw new NumberDoesntExistException(&quot;account &quot; + destination</span>
 					+ &quot; unknown at &quot; + name);
 <span class="fc" id="L74">		success = dest_account.muteer(money);</span>
 

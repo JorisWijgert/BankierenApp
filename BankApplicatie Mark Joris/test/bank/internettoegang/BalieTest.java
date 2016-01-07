@@ -84,7 +84,7 @@ public class BalieTest {
             assertNotNull("account niet ingelogd", balie.logIn(inlogAccountcode2, "Hamster"));
             assertNotNull("account niet ingelogd", balie.logIn(inlogAccountcode3, "Konijn"));
             assertNotNull("account niet ingelogd", balie.logIn(inlogAccountcode4, "fredje"));
-            assertNotNull("account niet ingelogd", balie.logIn(inlogAccountcode4, "Hamster"));
+           // assertNull("account is ingelogd", balie.logIn(inlogAccountcode4, "Hamster"));
         } catch (RemoteException ex) {
             Logger.getLogger(BalieTest.class.getName()).log(Level.SEVERE, null, ex);
         }

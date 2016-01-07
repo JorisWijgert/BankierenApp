@@ -47,13 +47,13 @@ public class Balie extends UnicastRemoteObject implements IBalie {
 <span class="fc" id="L47">		ILoginAccount loginaccount = loginaccounts.get(accountnaam);</span>
 <span class="fc bfc" id="L48" title="All 2 branches covered.">		if (loginaccount == null)</span>
 <span class="fc" id="L49">			return null;</span>
-<span class="pc bpc" id="L50" title="1 of 2 branches missed.">		if (loginaccount.checkWachtwoord(wachtwoord)) {</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">		if (loginaccount.checkWachtwoord(wachtwoord)) {</span>
 <span class="fc" id="L51">			IBankiersessie sessie = new Bankiersessie(loginaccount</span>
 <span class="fc" id="L52">					.getReknr(), bank);</span>
 			
 <span class="fc" id="L54">		 	return sessie;</span>
 		}
-<span class="nc" id="L56">		else return null;</span>
+<span class="fc" id="L56">		else return null;</span>
 	}
 
 	private static final String CHARS = &quot;abcdefghijklmnopqrstuvwxyz0123456789&quot;;

@@ -87,7 +87,7 @@ public class BankiersessieTest {
     @Test
     public void testGetRekening() throws InvalidSessionException, RemoteException {
         assertEquals("Rekening klopt onterecht niet.", bank.getRekening(100000000), bankiersessie.getRekening());
-        assertNotEquals("Rekening is op een of andere manier toch geldig", bank.getRekening(100000001), bankiersessie.getRekening());
+        assertNotSame("Rekening is op een of andere manier toch geldig", bank.getRekening(100000001), bankiersessie.getRekening());
     }
 
     @Test

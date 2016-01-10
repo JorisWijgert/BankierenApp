@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -58,11 +59,15 @@ public class BalieController implements Initializable {
         cbSelectBank1.valueProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue ov, Object t, Object t1) {
-                bankNaam = (String) ov.getValue();
-                if (application.startBalie(bankNaam)) {
-                    taMessage.setText(bankNaam + " bank is online");
-                } else {
-                    taMessage.setText("Connection Failed");
+                try {
+                    bankNaam = (String) ov.getValue();
+                    if (application.startBalie(bankNaam)) {
+                        taMessage.setText(bankNaam + " bank is online");
+                    } else {
+                        taMessage.setText("Connection Failed");
+                    }
+                } catch (NotBoundException ex) {
+                    Logger.getLogger(BalieController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }

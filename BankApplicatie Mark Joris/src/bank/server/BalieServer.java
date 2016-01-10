@@ -9,10 +9,13 @@ import bank.bankieren.Bank;
 import bank.gui.BankierClient;
 import bank.internettoegang.Balie;
 import bank.internettoegang.IBalie;
+import bankapplicatie.mark.joris.Iovermaak;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,7 +55,7 @@ public class BalieServer extends Application {
         }
     }
 
-    public boolean startBalie(String nameBank) {
+    public boolean startBalie(String nameBank) throws NotBoundException {
             
             FileOutputStream out = null;
             try {
@@ -64,9 +67,17 @@ public class BalieServer extends Application {
                 props.setProperty("balie", rmiBalie);
                 out = new FileOutputStream(nameBank + ".props");
                 props.store(out, null);
-                out.close();
-                java.rmi.registry.LocateRegistry.createRegistry(port);
-                IBalie balie = new Balie(new Bank(nameBank));
+                out.close();                
+                FileInputStream in = new FileInputStream("overmaak"+".props");
+                Properties properties = new Properties();
+                properties.load(in);
+                String rmiovermaak = properties.getProperty("overmaak");
+                in.close();
+                Iovermaak OM = (Iovermaak) Naming.lookup("rmi://" + rmiovermaak);
+                Bank bank = new Bank(nameBank, OM);
+                OM.addbank(bank);
+                //java.rmi.registry.LocateRegistry.createRegistry(port);
+                IBalie balie = new Balie(bank);
                 Naming.rebind(nameBank, balie);
                
                 return true;

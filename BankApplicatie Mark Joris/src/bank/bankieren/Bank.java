@@ -37,8 +37,7 @@ public class Bank implements IBank, Serializable {
                 IKlant klant = getKlant(name, city);
                 nieuwReknr = OV.getNieuwRekNR();
                 IRekeningTbvBank account = new Rekening(nieuwReknr, klant, Money.EURO);
-                accounts.put(nieuwReknr,account);
-                OV.updatebank(this);
+                accounts.put(nieuwReknr,account);                
                 return nieuwReknr;
             } catch (RemoteException ex) {
                 Logger.getLogger(Bank.class.getName()).log(Level.SEVERE, null, ex);
@@ -93,8 +92,7 @@ public class Bank implements IBank, Serializable {
                 success = dest_account.muteer(money);
                 
                 if (!success) // rollback
-                    source_account.muteer(money);
-                OV.updatebank(this);                
+                    source_account.muteer(money);                                
                 return success;
             } catch (RemoteException ex) {
                 Logger.getLogger(Bank.class.getName()).log(Level.SEVERE, null, ex);

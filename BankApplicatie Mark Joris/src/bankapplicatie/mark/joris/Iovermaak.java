@@ -18,13 +18,10 @@ import java.util.List;
  */
 public interface Iovermaak extends Remote {
     
-    public void addbank(Bank bank) throws RemoteException;
+    public void addbank(String nameBank) throws RemoteException;
     
     public IRekening zoeken(int destination) throws RemoteException;
     
-    public int getNieuwRekNR() throws RemoteException;
+    public int getNieuwRekNR() throws RemoteException;    
     
-    public void updatebank(Bank bank) throws RemoteException;
-    
-    public IBank getbank(Bank bank) throws RemoteException;
 }

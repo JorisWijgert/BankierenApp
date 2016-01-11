@@ -75,11 +75,11 @@ public class BalieServer extends Application {
                 in.close();
                 Iovermaak OM = (Iovermaak) Naming.lookup("rmi://" + rmiovermaak);
                 Bank bank = new Bank(nameBank, OM);
-                OM.addbank(bank);
+                               
                 //java.rmi.registry.LocateRegistry.createRegistry(port);
-                IBalie balie = new Balie(bank);
+                IBalie balie = new Balie(bank);               
                 Naming.rebind(nameBank, balie);
-               
+                OM.addbank(nameBank); 
                 return true;
 
             } catch (IOException ex) {

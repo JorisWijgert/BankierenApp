@@ -5,13 +5,15 @@
  */
 package bankapplicatie.mark.joris;
 
-import bank.bankieren.Bank;
-import bank.bankieren.IBank;
 import bank.bankieren.IRekening;
+import bank.internettoegang.IBalie;
+import java.io.FileInputStream;
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  *
@@ -19,30 +21,43 @@ import java.util.List;
  */
 public class overmaak extends UnicastRemoteObject implements Iovermaak{
     
-    List<Bank> banken;
+    List<IBalie> balies;
     private int nieuwReknr;
     
     
     public overmaak() throws RemoteException
     {
-      banken = new ArrayList<>(); 
+      balies = new ArrayList<>(); 
       nieuwReknr = 100000000;	
     }
     
     @Override
-    public void addbank(Bank bank) throws RemoteException
+    public void addbank(String nameBank) throws RemoteException
     {
-        banken.add(bank);
+        try {
+            FileInputStream in = new FileInputStream(nameBank+".props");
+            Properties props = new Properties();
+            props.load(in);
+            String rmiBalie = props.getProperty("balie");
+            in.close();
+            IBalie balie = (IBalie) Naming.lookup("rmi://" + rmiBalie);
+            balies.add(balie);
+
+            } catch (Exception exc) {
+                exc.printStackTrace();
+               
+            }
     }
     
     @Override
     public IRekening zoeken(int destination) throws RemoteException
     {
-        for (Bank bank : banken)
+        for (IBalie balie : balies)
         {
-           IRekening rekening = bank.getRekening(destination);
+           IRekening rekening = balie.getBank().getRekening(destination);
            if(rekening != null)
-           {
+           {      
+               
                return rekening;
            }
         }
@@ -54,32 +69,6 @@ public class overmaak extends UnicastRemoteObject implements Iovermaak{
     {
         nieuwReknr++;
         return nieuwReknr;
-    }
+    }   
     
-    public void updatebank(Bank bank) throws RemoteException
-    {
-        Bank wegbank = null;
-        for (Bank oudbank : banken)
-        {
-            if(oudbank.getName().equals(bank.getName()))
-            {
-                wegbank = oudbank;
-            }
-        }        
-        banken.remove(wegbank);
-        banken.add(bank);
-        
-    }
-    
-    public IBank getbank(Bank bank) throws RemoteException
-    {        
-        for (Bank nieuwbank : banken)
-        {
-            if(nieuwbank.getName().equals(bank.getName()))
-            {
-                return nieuwbank;
-            }
-        } 
-        return null;
-    }
 }

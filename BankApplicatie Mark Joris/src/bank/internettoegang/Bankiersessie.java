@@ -45,8 +45,7 @@ public class Bankiersessie extends UnicastRemoteObject implements
         if (!bedrag.isPositive()) {
             throw new RuntimeException("amount must be positive");
         }
-        boolean succes = bank.maakOver(reknr, bestemming, bedrag);
-        this.bank = bank.getovermaak().getbank((Bank) bank);
+        boolean succes = bank.maakOver(reknr, bestemming, bedrag);        
         return succes;
     }
 

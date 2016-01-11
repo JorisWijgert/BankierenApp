@@ -66,6 +66,11 @@ public class Balie extends UnicastRemoteObject implements IBalie {
 		}
 		return s.toString();
 	}
+        
+        public IBank getBank()
+        {
+            return bank;
+        }
 
 
 }

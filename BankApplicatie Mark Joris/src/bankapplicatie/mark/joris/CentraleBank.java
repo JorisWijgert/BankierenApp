@@ -5,9 +5,7 @@
  */
 package bankapplicatie.mark.joris;
 
-import bank.bankieren.Bank;
-import bank.internettoegang.Balie;
-import bank.internettoegang.IBalie;
+
 import bank.server.BalieServer;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -16,9 +14,6 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**

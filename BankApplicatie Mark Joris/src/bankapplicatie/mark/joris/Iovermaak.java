@@ -6,6 +6,7 @@
 package bankapplicatie.mark.joris;
 
 import bank.bankieren.Bank;
+import bank.bankieren.IBank;
 import bank.bankieren.IRekening;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -24,4 +25,6 @@ public interface Iovermaak extends Remote {
     public int getNieuwRekNR() throws RemoteException;
     
     public void updatebank(Bank bank) throws RemoteException;
+    
+    public IBank getbank(Bank bank) throws RemoteException;
 }

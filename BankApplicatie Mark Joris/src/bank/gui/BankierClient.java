@@ -11,10 +11,6 @@
 
 package bank.gui;
 
-import bank.gui.BankSelectController;
-import bank.gui.BankierSessieController;
-import bank.gui.LoginController;
-import bank.gui.OpenRekeningController;
 import bank.internettoegang.IBalie;
 import bank.internettoegang.IBankiersessie;
 import java.io.FileInputStream;

@@ -6,6 +6,7 @@
 package bankapplicatie.mark.joris;
 
 import bank.bankieren.Bank;
+import bank.bankieren.IBank;
 import bank.bankieren.IRekening;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -68,5 +69,17 @@ public class overmaak extends UnicastRemoteObject implements Iovermaak{
         banken.remove(wegbank);
         banken.add(bank);
         
+    }
+    
+    public IBank getbank(Bank bank) throws RemoteException
+    {        
+        for (Bank nieuwbank : banken)
+        {
+            if(nieuwbank.getName().equals(bank.getName()))
+            {
+                return nieuwbank;
+            }
+        } 
+        return null;
     }
 }

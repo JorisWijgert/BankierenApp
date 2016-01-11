@@ -1,5 +1,6 @@
 package bank.bankieren;
 
+import bankapplicatie.mark.joris.Iovermaak;
 import fontys.util.*;
 
 /**
@@ -50,4 +51,6 @@ public interface IBank {
      * @return de naam van deze bank
      */
     String getName();
+    
+    Iovermaak getovermaak();
 }

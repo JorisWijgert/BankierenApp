@@ -94,7 +94,7 @@ public class Bank implements IBank, Serializable {
                 
                 if (!success) // rollback
                     source_account.muteer(money);
-                OV.updatebank(this);
+                OV.updatebank(this);                
                 return success;
             } catch (RemoteException ex) {
                 Logger.getLogger(Bank.class.getName()).log(Level.SEVERE, null, ex);
@@ -105,6 +105,11 @@ public class Bank implements IBank, Serializable {
 	@Override
 	public String getName() {
 		return name;
+	}
+        
+        @Override
+        public Iovermaak getovermaak() {
+		return OV;
 	}
 
 }

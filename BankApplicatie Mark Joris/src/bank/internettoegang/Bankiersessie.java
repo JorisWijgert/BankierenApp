@@ -1,5 +1,6 @@
 package bank.internettoegang;
 
+import bank.bankieren.Bank;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
@@ -44,8 +45,9 @@ public class Bankiersessie extends UnicastRemoteObject implements
         if (!bedrag.isPositive()) {
             throw new RuntimeException("amount must be positive");
         }
-
-        return bank.maakOver(reknr, bestemming, bedrag);
+        boolean succes = bank.maakOver(reknr, bestemming, bedrag);
+        this.bank = bank.getovermaak().getbank((Bank) bank);
+        return succes;
     }
 
     private void updateLaatsteAanroep() throws InvalidSessionException, NoSuchObjectException {

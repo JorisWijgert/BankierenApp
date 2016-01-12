@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="nl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Bank.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;BankApplicatie_Mark_Joris&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">bank.bankieren</a> &gt; <span class="el_source">Bank.java</span></div><h1>Bank.java</h1><pre class="source lang-java linenums">package bank.bankieren;
 
+import bankapplicatie.mark.joris.Iovermaak;
 import fontys.util.*;
+import java.io.Serializable;
 
 import java.rmi.RemoteException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class Bank implements IBank {
+public class Bank implements IBank, Serializable {
 
 	/**
 	 * 
@@ -15,72 +19,95 @@ public class Bank implements IBank {
 	private Collection&lt;IKlant&gt; clients;
 	private int nieuwReknr;
 	private String name;
+        private Iovermaak OV;
 
-<span class="fc" id="L19">	public Bank(String name) {</span>
-<span class="fc" id="L20">		accounts = new HashMap&lt;Integer,IRekeningTbvBank&gt;();</span>
-<span class="fc" id="L21">		clients = new ArrayList&lt;IKlant&gt;();</span>
-<span class="fc" id="L22">		nieuwReknr = 100000000;	</span>
-<span class="fc" id="L23">		this.name = name;	</span>
-<span class="fc" id="L24">	}</span>
+<span class="fc" id="L24">	public Bank(String name, Iovermaak OV) {</span>
+<span class="fc" id="L25">		accounts = new HashMap&lt;Integer,IRekeningTbvBank&gt;();</span>
+<span class="fc" id="L26">		clients = new ArrayList&lt;IKlant&gt;();</span>
+<span class="fc" id="L27">		nieuwReknr = 0;	</span>
+<span class="fc" id="L28">		this.name = name;</span>
+<span class="fc" id="L29">                this.OV = OV;</span>
+<span class="fc" id="L30">	}</span>
 
 	public synchronized int openRekening(String name, String city) {
-<span class="fc bfc" id="L27" title="All 4 branches covered.">		if (name.equals(&quot;&quot;) || city.equals(&quot;&quot;))</span>
-<span class="fc" id="L28">			return -1;</span>
-
-<span class="fc" id="L30">		IKlant klant = getKlant(name, city);</span>
-<span class="fc" id="L31">		IRekeningTbvBank account = new Rekening(nieuwReknr, klant, Money.EURO);</span>
-<span class="fc" id="L32">		accounts.put(nieuwReknr,account);</span>
-<span class="fc" id="L33">		nieuwReknr++;</span>
-<span class="fc" id="L34">		return nieuwReknr-1;</span>
+            try {
+<span class="fc bfc" id="L34" title="All 4 branches covered.">                if (name.equals(&quot;&quot;) || city.equals(&quot;&quot;))</span>
+<span class="fc" id="L35">                    return -1;</span>
+                
+<span class="fc" id="L37">                IKlant klant = getKlant(name, city);</span>
+<span class="fc" id="L38">                nieuwReknr = OV.getNieuwRekNR();</span>
+<span class="fc" id="L39">                IRekeningTbvBank account = new Rekening(nieuwReknr, klant, Money.EURO);</span>
+<span class="fc" id="L40">                accounts.put(nieuwReknr,account);                </span>
+<span class="fc" id="L41">                return nieuwReknr;</span>
+<span class="nc" id="L42">            } catch (RemoteException ex) {</span>
+<span class="nc" id="L43">                Logger.getLogger(Bank.class.getName()).log(Level.SEVERE, null, ex);</span>
+            }
+<span class="nc" id="L45">            return -1;</span>
 	}
 
 	private IKlant getKlant(String name, String city) {
-<span class="fc bfc" id="L38" title="All 2 branches covered.">		for (IKlant k : clients) {</span>
-<span class="fc bfc" id="L39" title="All 4 branches covered.">			if (k.getNaam().equals(name) &amp;&amp; k.getPlaats().equals(city))</span>
-<span class="fc" id="L40">				return k;</span>
-<span class="fc" id="L41">		}</span>
-<span class="fc" id="L42">		IKlant klant = new Klant(name, city);</span>
-<span class="fc" id="L43">		clients.add(klant);</span>
-<span class="fc" id="L44">		return klant;</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">		for (IKlant k : clients) {</span>
+<span class="fc bfc" id="L50" title="All 4 branches covered.">			if (k.getNaam().equals(name) &amp;&amp; k.getPlaats().equals(city))</span>
+<span class="fc" id="L51">				return k;</span>
+<span class="fc" id="L52">		}</span>
+<span class="fc" id="L53">		IKlant klant = new Klant(name, city);</span>
+<span class="fc" id="L54">		clients.add(klant);</span>
+<span class="fc" id="L55">		return klant;</span>
 	}
 
 	public IRekening getRekening(int nr) {
-<span class="fc" id="L48">		return accounts.get(nr);</span>
+<span class="fc" id="L59">		return accounts.get(nr);</span>
 	}
 
-	public synchronized boolean maakOver(int source, int destination, Money money)
+	public boolean maakOver(int source, int destination, Money money)
 			throws NumberDoesntExistException {
-<span class="fc bfc" id="L53" title="All 2 branches covered.">		if (source == destination)</span>
-<span class="fc" id="L54">			throw new RuntimeException(</span>
-					&quot;cannot transfer money to your own account&quot;);
-<span class="fc bfc" id="L56" title="All 2 branches covered.">		if (!money.isPositive())</span>
-<span class="fc" id="L57">			throw new RuntimeException(&quot;money must be positive&quot;);</span>
-
-<span class="fc" id="L59">		IRekeningTbvBank source_account = (IRekeningTbvBank) getRekening(source);</span>
-<span class="fc bfc" id="L60" title="All 2 branches covered.">		if (source_account == null)</span>
-<span class="fc" id="L61">			throw new NumberDoesntExistException(&quot;account &quot; + source</span>
-					+ &quot; unknown at &quot; + name);
-
-<span class="fc" id="L64">		Money negative = Money.difference(new Money(0, money.getCurrency()),</span>
-				money);
-<span class="fc" id="L66">		boolean success = source_account.muteer(negative);</span>
-<span class="fc bfc" id="L67" title="All 2 branches covered.">		if (!success)</span>
-<span class="fc" id="L68">			return false;</span>
-
-<span class="fc" id="L70">		IRekeningTbvBank dest_account = (IRekeningTbvBank) getRekening(destination);</span>
-<span class="fc bfc" id="L71" title="All 2 branches covered.">		if (dest_account == null) </span>
-<span class="fc" id="L72">			throw new NumberDoesntExistException(&quot;account &quot; + destination</span>
-					+ &quot; unknown at &quot; + name);
-<span class="fc" id="L74">		success = dest_account.muteer(money);</span>
-
-<span class="pc bpc" id="L76" title="1 of 2 branches missed.">		if (!success) // rollback</span>
-<span class="nc" id="L77">			source_account.muteer(money);</span>
-<span class="fc" id="L78">		return success;</span>
+            try {
+<span class="fc bfc" id="L65" title="All 2 branches covered.">                if (source == destination)</span>
+<span class="fc" id="L66">                    throw new RuntimeException(</span>
+                            &quot;cannot transfer money to your own account&quot;);
+<span class="fc bfc" id="L68" title="All 2 branches covered.">                if (!money.isPositive())</span>
+<span class="fc" id="L69">                    throw new RuntimeException(&quot;money must be positive&quot;);</span>
+                
+<span class="fc" id="L71">                IRekeningTbvBank source_account = (IRekeningTbvBank) getRekening(source);</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">                if (source_account == null)</span>
+<span class="fc" id="L73">                    throw new NumberDoesntExistException(&quot;account &quot; + source</span>
+                            + &quot; unknown at &quot; + name);
+                
+<span class="fc" id="L76">                Money negative = Money.difference(new Money(0, money.getCurrency()),</span>
+                        money);
+<span class="fc" id="L78">                boolean success = source_account.muteer(negative);</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">                if (!success)</span>
+                {
+<span class="nc" id="L81">                   return false; </span>
+                }
+                    
+                
+                
+<span class="fc" id="L86">                System.out.println(&quot;kaas&quot;);</span>
+                
+<span class="fc" id="L88">                IRekeningTbvBank dest_account = (IRekeningTbvBank) OV.zoeken(destination);</span>
+<span class="pc bpc" id="L89" title="1 of 2 branches missed.">                if (dest_account == null)</span>
+<span class="fc" id="L90">                    throw new NumberDoesntExistException(&quot;account &quot; + destination</span>
+                            + &quot; unknown at &quot; + name);
+<span class="nc" id="L92">                success = dest_account.muteer(money);</span>
+                
+<span class="nc bnc" id="L94" title="All 2 branches missed.">                if (!success) // rollback</span>
+<span class="nc" id="L95">                    source_account.muteer(money);                                </span>
+<span class="nc" id="L96">                return success;</span>
+<span class="nc" id="L97">            } catch (RemoteException ex) {</span>
+<span class="nc" id="L98">                Logger.getLogger(Bank.class.getName()).log(Level.SEVERE, null, ex);</span>
+            }
+<span class="nc" id="L100">            return false;</span>
 	}
 
 	@Override
 	public String getName() {
-<span class="fc" id="L83">		return name;</span>
+<span class="fc" id="L105">		return name;</span>
+	}
+        
+        @Override
+        public Iovermaak getovermaak() {
+<span class="nc" id="L110">		return OV;</span>
 	}
 
 }

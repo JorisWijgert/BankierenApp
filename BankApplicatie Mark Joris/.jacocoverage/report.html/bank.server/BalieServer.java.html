@@ -9,10 +9,13 @@ import bank.bankieren.Bank;
 import bank.gui.BankierClient;
 import bank.internettoegang.Balie;
 import bank.internettoegang.IBalie;
+import bankapplicatie.mark.joris.Iovermaak;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,91 +32,99 @@ import javafx.stage.Stage;
  *
  * @author frankcoenen
  */
-<span class="nc" id="L32">public class BalieServer extends Application {</span>
+<span class="nc" id="L35">public class BalieServer extends Application {</span>
 
     private Stage stage;
-<span class="nc" id="L35">    private final double MINIMUM_WINDOW_WIDTH = 600.0;</span>
-<span class="nc" id="L36">    private final double MINIMUM_WINDOW_HEIGHT = 200.0;</span>
+<span class="nc" id="L38">    private final double MINIMUM_WINDOW_WIDTH = 600.0;</span>
+<span class="nc" id="L39">    private final double MINIMUM_WINDOW_HEIGHT = 200.0;</span>
     private String nameBank;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
 
         try {
-<span class="nc" id="L43">            stage = primaryStage;</span>
-<span class="nc" id="L44">            stage.setTitle(&quot;Bankieren&quot;);</span>
-<span class="nc" id="L45">            stage.setMinWidth(MINIMUM_WINDOW_WIDTH);</span>
-<span class="nc" id="L46">            stage.setMinHeight(MINIMUM_WINDOW_HEIGHT);</span>
-<span class="nc" id="L47">            gotoBankSelect();</span>
+<span class="nc" id="L46">            stage = primaryStage;</span>
+<span class="nc" id="L47">            stage.setTitle(&quot;Bankieren&quot;);</span>
+<span class="nc" id="L48">            stage.setMinWidth(MINIMUM_WINDOW_WIDTH);</span>
+<span class="nc" id="L49">            stage.setMinHeight(MINIMUM_WINDOW_HEIGHT);</span>
+<span class="nc" id="L50">            gotoBankSelect();</span>
 
-<span class="nc" id="L49">            primaryStage.show();</span>
-<span class="nc" id="L50">        } catch (Exception ex) {</span>
-<span class="nc" id="L51">            ex.printStackTrace();</span>
-<span class="nc" id="L52">        }</span>
-<span class="nc" id="L53">    }</span>
+<span class="nc" id="L52">            primaryStage.show();</span>
+<span class="nc" id="L53">        } catch (Exception ex) {</span>
+<span class="nc" id="L54">            ex.printStackTrace();</span>
+<span class="nc" id="L55">        }</span>
+<span class="nc" id="L56">    }</span>
 
-    public boolean startBalie(String nameBank) {
+    public boolean startBalie(String nameBank) throws NotBoundException {
             
-<span class="nc" id="L57">            FileOutputStream out = null;</span>
+<span class="nc" id="L60">            FileOutputStream out = null;</span>
             try {
-<span class="nc" id="L59">                this.nameBank = nameBank;</span>
-<span class="nc" id="L60">                String address = java.net.InetAddress.getLocalHost().getHostAddress();</span>
-<span class="nc" id="L61">                int port = 1099;</span>
-<span class="nc" id="L62">                Properties props = new Properties();</span>
-<span class="nc" id="L63">                String rmiBalie = address + &quot;:&quot; + port + &quot;/&quot; + nameBank;</span>
-<span class="nc" id="L64">                props.setProperty(&quot;balie&quot;, rmiBalie);</span>
-<span class="nc" id="L65">                out = new FileOutputStream(nameBank + &quot;.props&quot;);</span>
-<span class="nc" id="L66">                props.store(out, null);</span>
-<span class="nc" id="L67">                out.close();</span>
-<span class="nc" id="L68">                java.rmi.registry.LocateRegistry.createRegistry(port);</span>
-<span class="nc" id="L69">                IBalie balie = new Balie(new Bank(nameBank));</span>
-<span class="nc" id="L70">                Naming.rebind(nameBank, balie);</span>
-               
-<span class="nc" id="L72">                return true;</span>
+<span class="nc" id="L62">                this.nameBank = nameBank;</span>
+<span class="nc" id="L63">                String address = java.net.InetAddress.getLocalHost().getHostAddress();</span>
+<span class="nc" id="L64">                int port = 1099;</span>
+<span class="nc" id="L65">                Properties props = new Properties();</span>
+<span class="nc" id="L66">                String rmiBalie = address + &quot;:&quot; + port + &quot;/&quot; + nameBank;</span>
+<span class="nc" id="L67">                props.setProperty(&quot;balie&quot;, rmiBalie);</span>
+<span class="nc" id="L68">                out = new FileOutputStream(nameBank + &quot;.props&quot;);</span>
+<span class="nc" id="L69">                props.store(out, null);</span>
+<span class="nc" id="L70">                out.close();                </span>
+<span class="nc" id="L71">                FileInputStream in = new FileInputStream(&quot;overmaak&quot;+&quot;.props&quot;);</span>
+<span class="nc" id="L72">                Properties properties = new Properties();</span>
+<span class="nc" id="L73">                properties.load(in);</span>
+<span class="nc" id="L74">                String rmiovermaak = properties.getProperty(&quot;overmaak&quot;);</span>
+<span class="nc" id="L75">                in.close();</span>
+<span class="nc" id="L76">                Iovermaak OM = (Iovermaak) Naming.lookup(&quot;rmi://&quot; + rmiovermaak);</span>
+<span class="nc" id="L77">                Bank bank = new Bank(nameBank, OM);</span>
+                               
+                //java.rmi.registry.LocateRegistry.createRegistry(port);
+<span class="nc" id="L80">                IBalie balie = new Balie(bank);               </span>
+<span class="nc" id="L81">                Naming.rebind(nameBank, balie);</span>
+<span class="nc" id="L82">                OM.addbank(nameBank); </span>
+<span class="nc" id="L83">                return true;</span>
 
-<span class="nc" id="L74">            } catch (IOException ex) {</span>
-<span class="nc" id="L75">                Logger.getLogger(BalieServer.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L85">            } catch (IOException ex) {</span>
+<span class="nc" id="L86">                Logger.getLogger(BalieServer.class.getName()).log(Level.SEVERE, null, ex);</span>
             } finally {
-<span class="nc" id="L77">                try {</span>
-<span class="nc" id="L78">                    out.close();</span>
-<span class="nc" id="L79">                } catch (IOException ex) {</span>
-<span class="nc" id="L80">                    Logger.getLogger(BalieServer.class.getName()).log(Level.SEVERE, null, ex);</span>
-<span class="nc" id="L81">                }</span>
-<span class="nc" id="L82">            }</span>
-<span class="nc" id="L83">            return false;</span>
+<span class="nc" id="L88">                try {</span>
+<span class="nc" id="L89">                    out.close();</span>
+<span class="nc" id="L90">                } catch (IOException ex) {</span>
+<span class="nc" id="L91">                    Logger.getLogger(BalieServer.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L92">                }</span>
+<span class="nc" id="L93">            }</span>
+<span class="nc" id="L94">            return false;</span>
     }
 
     public void gotoBankSelect() {
         try {
-<span class="nc" id="L88">            BalieController bankSelect = (BalieController) replaceSceneContent(&quot;Balie.fxml&quot;);</span>
-<span class="nc" id="L89">            bankSelect.setApp(this);</span>
-<span class="nc" id="L90">        } catch (Exception ex) {</span>
-<span class="nc" id="L91">            Logger.getLogger(BankierClient.class.getName()).log(Level.SEVERE, null, ex);</span>
-<span class="nc" id="L92">        }</span>
-<span class="nc" id="L93">    }</span>
+<span class="nc" id="L99">            BalieController bankSelect = (BalieController) replaceSceneContent(&quot;Balie.fxml&quot;);</span>
+<span class="nc" id="L100">            bankSelect.setApp(this);</span>
+<span class="nc" id="L101">        } catch (Exception ex) {</span>
+<span class="nc" id="L102">            Logger.getLogger(BankierClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L103">        }</span>
+<span class="nc" id="L104">    }</span>
 
     private Initializable replaceSceneContent(String fxml) throws Exception {
-<span class="nc" id="L96">        FXMLLoader loader = new FXMLLoader();</span>
-<span class="nc" id="L97">        InputStream in = BalieServer.class.getResourceAsStream(fxml);</span>
-<span class="nc" id="L98">        loader.setBuilderFactory(new JavaFXBuilderFactory());</span>
-<span class="nc" id="L99">        loader.setLocation(BalieServer.class.getResource(fxml));</span>
+<span class="nc" id="L107">        FXMLLoader loader = new FXMLLoader();</span>
+<span class="nc" id="L108">        InputStream in = BalieServer.class.getResourceAsStream(fxml);</span>
+<span class="nc" id="L109">        loader.setBuilderFactory(new JavaFXBuilderFactory());</span>
+<span class="nc" id="L110">        loader.setLocation(BalieServer.class.getResource(fxml));</span>
         AnchorPane page;
         try {
-<span class="nc" id="L102">            page = (AnchorPane) loader.load(in);</span>
+<span class="nc" id="L113">            page = (AnchorPane) loader.load(in);</span>
         } finally {
-<span class="nc" id="L104">            in.close();</span>
-<span class="nc" id="L105">        }</span>
-<span class="nc" id="L106">        Scene scene = new Scene(page, 800, 600);</span>
-<span class="nc" id="L107">        stage.setScene(scene);</span>
-<span class="nc" id="L108">        stage.sizeToScene();</span>
-<span class="nc" id="L109">        return (Initializable) loader.getController();</span>
+<span class="nc" id="L115">            in.close();</span>
+<span class="nc" id="L116">        }</span>
+<span class="nc" id="L117">        Scene scene = new Scene(page, 800, 600);</span>
+<span class="nc" id="L118">        stage.setScene(scene);</span>
+<span class="nc" id="L119">        stage.sizeToScene();</span>
+<span class="nc" id="L120">        return (Initializable) loader.getController();</span>
     }
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-<span class="nc" id="L116">        launch(args);</span>
-<span class="nc" id="L117">    }</span>
+<span class="nc" id="L127">        launch(args);</span>
+<span class="nc" id="L128">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

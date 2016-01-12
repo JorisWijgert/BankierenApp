@@ -80,20 +80,20 @@ public class BankTest {
      */
     @Test
     public void testOpenRekening() {
-        assertEquals("Rekeningnummer is niet goed aangemaakt", 100000000, bank.openRekening("Joris", "Oploo"));
+        assertEquals("Rekeningnummer is niet goed aangemaakt", 100000001, bank.openRekening("Joris", "Oploo"));
         assertEquals("Rekeningnummer is onbedoeld goed aangemaakt", -1, bank.openRekening("", "Oploo"));
         assertEquals("Rekeningnummer is onbedoeld goed aangemaakt", -1, bank.openRekening("Joris", ""));
-        assertEquals("Rekeningnummer is niet goed aangemaakt", 100000001, bank.openRekening("Joris", "Oploo"));
-        assertEquals("Rekeningnummer is niet goed aangemaakt", 100000002, bank.openRekening("Mark", "Oploo"));
-        assertEquals("Rekeningnummer is niet goed aangemaakt", 100000003, bank.openRekening("Joris", "Castenray"));
-        assertEquals("Rekeningnummer is niet goed aangemaakt", 100000004, bank.openRekening("Mark", "Castenray"));
+        assertEquals("Rekeningnummer is niet goed aangemaakt", 100000002, bank.openRekening("Joris", "Oploo"));
+        assertEquals("Rekeningnummer is niet goed aangemaakt", 100000003, bank.openRekening("Mark", "Oploo"));
+        assertEquals("Rekeningnummer is niet goed aangemaakt", 100000004, bank.openRekening("Joris", "Castenray"));
+        assertEquals("Rekeningnummer is niet goed aangemaakt", 100000005, bank.openRekening("Mark", "Castenray"));
     }
 
     @Test
     public void testGetRekening() {
-        IRekening testRekening = new Rekening(100000000, new Klant("Joris", "Oploo"), "Euro");
+        IRekening testRekening = new Rekening(100000001, new Klant("Joris", "Oploo"), "Euro");
         bank.openRekening("Joris", "Oploo");
-        assertTrue("Rekeningen wordt niet goed opgehaald", testRekening.equals(bank.getRekening(100000000)));
+        assertTrue("Rekeningen wordt niet goed opgehaald", testRekening.equals(bank.getRekening(100000001)));
     }
 
     @Test(expected = RuntimeException.class)
@@ -131,12 +131,12 @@ public class BankTest {
         bank.openRekening("Joris", "Oploo");
         Money geld = new Money(20, Money.EURO);
 
-        bank.maakOver(100000000, 12, geld);
+        bank.maakOver(100000001, 12, geld);
 
     }
 
     @Test
-    public void maakover() {
+    public void maakover() throws NumberDoesntExistException {
         bank.openRekening("Joris", "Oploo");
         bank.openRekening("Mark", "Castenray");
         bank.openRekening("Tom", "Jones");
@@ -144,16 +144,14 @@ public class BankTest {
         Money geld2 = new Money(100, Money.EURO);
         Money geld3 = new Money(40, Money.EURO);
         Money geld4 = new Money(11000, Money.EURO);
-        try {
-            assertTrue("niet overgemaakt", bank.maakOver(100000000, 100000001, geld1));
-            assertTrue("niet overgemaakt", bank.maakOver(100000000, 100000002, geld2));
-            assertTrue("niet overgemaakt", bank.maakOver(100000001, 100000002, geld3));
-            assertTrue("niet overgemaakt", bank.maakOver(100000002, 100000001, geld1));
-            assertTrue("niet overgemaakt", bank.maakOver(100000002, 100000000, geld2));
-            assertTrue("niet overgemaakt", bank.maakOver(100000001, 100000000, geld3));
-            assertFalse("toch overgemaakt", bank.maakOver(100000001, 100000000, geld4));
-        } catch (NumberDoesntExistException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
+        assertTrue("niet overgemaakt", bank.maakOver(100000001, 100000002, geld1));
+        assertTrue("niet overgemaakt", bank.maakOver(100000001, 100000003, geld2));
+        assertTrue("niet overgemaakt", bank.maakOver(100000002, 100000003, geld3));
+        assertTrue("niet overgemaakt", bank.maakOver(100000003, 100000002, geld1));
+        assertTrue("niet overgemaakt", bank.maakOver(100000003, 100000001, geld2));
+        assertTrue("niet overgemaakt", bank.maakOver(100000002, 100000001, geld3));
+        assertFalse("toch overgemaakt", bank.maakOver(100000002, 100000001, geld4));
+
     }
 }

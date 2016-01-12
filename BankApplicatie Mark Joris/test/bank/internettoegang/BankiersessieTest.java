@@ -28,7 +28,7 @@ import static org.junit.Assert.*;
  */
 public class BankiersessieTest {
 
-    private static IBankiersessie bankiersessie;
+    private static IBankiersessie bankiersessie, bs2;
     private static IBank bank;
 
     public BankiersessieTest() {
@@ -52,8 +52,8 @@ public class BankiersessieTest {
 
     @Before
     public void setUp() throws RemoteException {
-        bankiersessie = new Bankiersessie(100000000, bank);
-
+        bankiersessie = new Bankiersessie(100000001, bank);
+        bs2 = new Bankiersessie(100000002, bank);
     }
 
     @After
@@ -75,17 +75,17 @@ public class BankiersessieTest {
     @Test(expected = InvalidSessionException.class)
     public void testMaakOverInvalidSessionException() throws InterruptedException, NumberDoesntExistException, InvalidSessionException, RemoteException {
         Thread.sleep(IBankiersessie.GELDIGHEIDSDUUR);
-        bankiersessie.maakOver(100000001, new Money(1200, Money.EURO));
+        bankiersessie.maakOver(100000002, new Money(1200, Money.EURO));
     }
 
     @Test(expected = RuntimeException.class)
     public void testMaakOverRuntimeExceptionSourceDestination() throws InterruptedException, NumberDoesntExistException, InvalidSessionException, RemoteException {
-        bankiersessie.maakOver(100000000, new Money(1200, Money.EURO));
+        bankiersessie.maakOver(100000001, new Money(1200, Money.EURO));
     }
 
     @Test(expected = RuntimeException.class)
     public void testMaakOverRuntimeExceptionAmount() throws InterruptedException, NumberDoesntExistException, InvalidSessionException, RemoteException {
-        bankiersessie.maakOver(100000001, new Money(-1200, Money.EURO));
+        bankiersessie.maakOver(100000002, new Money(-1200, Money.EURO));
     }
 
     @Test
@@ -95,8 +95,8 @@ public class BankiersessieTest {
 
     @Test
     public void testGetRekening() throws InvalidSessionException, RemoteException {
-        assertEquals("Rekening klopt onterecht niet.", bank.getRekening(100000000), bankiersessie.getRekening());
-        assertNotSame("Rekening is op een of andere manier toch geldig", bank.getRekening(100000001), bankiersessie.getRekening());
+        assertEquals("Rekening klopt onterecht niet.", bank.getRekening(100000001), bankiersessie.getRekening());
+        assertNotSame("Rekening is op een of andere manier toch geldig", bank.getRekening(100000002), bankiersessie.getRekening());
     }
 
     @Test

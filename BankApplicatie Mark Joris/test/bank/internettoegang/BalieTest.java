@@ -6,6 +6,8 @@
 package bank.internettoegang;
 
 import bank.bankieren.Bank;
+import bankapplicatie.mark.joris.Iovermaak;
+import bankapplicatie.mark.joris.overmaak;
 import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,9 +40,14 @@ public class BalieTest {
     
     @Before
     public void setUp() {
-        bank = new Bank("rabo");
         try {
-            balie = new Balie(bank);
+            Iovermaak OV = new overmaak();
+            bank = new Bank("rabo", OV);
+            try {
+                balie = new Balie(bank);
+            } catch (RemoteException ex) {
+                Logger.getLogger(BalieTest.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } catch (RemoteException ex) {
             Logger.getLogger(BalieTest.class.getName()).log(Level.SEVERE, null, ex);
         }

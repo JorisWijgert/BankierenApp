@@ -5,7 +5,10 @@
  */
 package bank.bankieren;
 
+import bankapplicatie.mark.joris.Iovermaak;
+import bankapplicatie.mark.joris.overmaak;
 import fontys.util.NumberDoesntExistException;
+import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.After;
@@ -22,6 +25,7 @@ import static org.junit.Assert.*;
 public class BankTest {
 
     private static IBank bank;
+    private static Iovermaak OV;
 
     public BankTest() {
 
@@ -29,7 +33,12 @@ public class BankTest {
 
     @BeforeClass
     public static void setUpClass() {
-        bank = new Bank("Rabobank");
+        try {
+            OV = new overmaak();
+            bank = new Bank("Rabobank", OV);
+        } catch (RemoteException ex) {
+            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @AfterClass
@@ -54,7 +63,7 @@ public class BankTest {
      */
     @Test
     public void testBankConst() {
-        IBank bank2 = new Bank("ABN AMRO");
+        IBank bank2 = new Bank("ABN AMRO", OV);
 
     }
 

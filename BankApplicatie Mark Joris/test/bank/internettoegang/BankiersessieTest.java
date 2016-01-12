@@ -8,9 +8,13 @@ package bank.internettoegang;
 import bank.bankieren.Bank;
 import bank.bankieren.IBank;
 import bank.bankieren.Money;
+import bankapplicatie.mark.joris.Iovermaak;
+import bankapplicatie.mark.joris.overmaak;
 import fontys.util.InvalidSessionException;
 import fontys.util.NumberDoesntExistException;
 import java.rmi.RemoteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -32,9 +36,14 @@ public class BankiersessieTest {
 
     @BeforeClass
     public static void setUpClass() {
-        bank = new Bank("Rabobank");
-        bank.openRekening("Joris", "Oploo");
-        bank.openRekening("Mark", "Castenray");
+        try {
+            Iovermaak OV = new overmaak();
+            bank = new Bank("Rabobank", OV);
+            bank.openRekening("Joris", "Oploo");
+            bank.openRekening("Mark", "Castenray");
+        } catch (RemoteException ex) {
+            Logger.getLogger(BankiersessieTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @AfterClass

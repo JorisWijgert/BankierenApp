@@ -6,6 +6,7 @@
 package bankapplicatie.mark.joris;
 
 import bank.bankieren.IRekening;
+import bank.bankieren.Money;
 import bank.internettoegang.IBalie;
 import java.io.FileInputStream;
 import java.rmi.Naming;
@@ -50,18 +51,19 @@ public class overmaak extends UnicastRemoteObject implements Iovermaak{
     }
     
     @Override
-    public IRekening zoeken(int destination) throws RemoteException
+    public boolean zoeken(int destination, Money money) throws RemoteException
     {
+        boolean succes = false;
         for (IBalie balie : balies)
         {
            IRekening rekening = balie.getBank().getRekening(destination);
            if(rekening != null)
            {      
-               
-               return rekening;
+               succes = balie.ontvangen(rekening, money);
+               return succes;
            }
         }
-        return null;
+        return succes;
     }
     
     @Override

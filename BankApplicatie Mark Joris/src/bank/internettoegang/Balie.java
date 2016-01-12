@@ -4,6 +4,9 @@ import java.rmi.*;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import bank.bankieren.*;
+import fontys.util.NumberDoesntExistException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Balie extends UnicastRemoteObject implements IBalie {
 
@@ -71,6 +74,17 @@ public class Balie extends UnicastRemoteObject implements IBalie {
         {
             return bank;
         }
-
-
+        
+        public boolean ontvangen(IRekening rekening, Money money)
+        {
+            IBank succes;
+            try {
+                succes = bank.ontvangen(rekening, money);
+                return true;
+            } catch (NumberDoesntExistException ex) {
+                Logger.getLogger(Balie.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return false;
+            
+        }
 }

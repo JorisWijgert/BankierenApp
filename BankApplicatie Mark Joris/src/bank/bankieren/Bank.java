@@ -3,7 +3,6 @@ package bank.bankieren;
 import bankapplicatie.mark.joris.Iovermaak;
 import fontys.util.*;
 import java.io.Serializable;
-
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.logging.Level;
@@ -80,16 +79,8 @@ public class Bank implements IBank, Serializable {
                 {
                    return false; 
                 }
-                    
-                
-                
-                System.out.println("kaas");
-                
-                IRekeningTbvBank dest_account = (IRekeningTbvBank) OV.zoeken(destination);
-                if (dest_account == null)
-                    throw new NumberDoesntExistException("account " + destination
-                            + " unknown at " + name);
-                success = dest_account.muteer(money);
+                System.out.println("kaas");                
+                success = OV.zoeken(destination, money);
                 
                 if (!success) // rollback
                     source_account.muteer(money);                                
@@ -109,5 +100,13 @@ public class Bank implements IBank, Serializable {
         public Iovermaak getovermaak() {
 		return OV;
 	}
+        
+        public Bank ontvangen(IRekening rekening, Money money) throws NumberDoesntExistException
+        {
+            boolean success;
+            IRekeningTbvBank dest_account = (IRekeningTbvBank) getRekening(rekening.getNr());            
+            success = dest_account.muteer(money);            
+            return this;
+        }
 
 }

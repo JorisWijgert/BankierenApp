@@ -53,4 +53,6 @@ public interface IBank {
     String getName();
     
     Iovermaak getovermaak();
+    
+    Bank ontvangen(IRekening rekening, Money money) throws NumberDoesntExistException;
 }

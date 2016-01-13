@@ -5,6 +5,7 @@
  */
 package bankapplicatie.mark.joris;
 
+import bank.bankieren.IBank;
 import bank.bankieren.IRekening;
 import bank.bankieren.Money;
 import bank.internettoegang.IBalie;
@@ -54,23 +55,31 @@ public class overmaak extends UnicastRemoteObject implements Iovermaak{
     public boolean zoeken(int destination, Money money) throws RemoteException
     {
         boolean succes = false;
-        for (IBalie balie : balies)
-        {
-           IRekening rekening = balie.getBank().getRekening(destination);
+        String nummer = String.valueOf(destination);
+        IBalie balie = balies.get(Integer.parseInt(nummer.substring(1, 3)));        
+        IRekening rekening = balie.getBank().getRekening(destination);
            if(rekening != null)
            {      
-               succes = balie.ontvangen(rekening, money);
-               return succes;
+               succes = balie.ontvangen(rekening, money);               
            }
-        }
-        return succes;
+        return succes;        
     }
     
     @Override
-    public int getNieuwRekNR() throws RemoteException
+    public int getNieuwRekNR(IBank bank) throws RemoteException
     {
-        nieuwReknr++;
-        return nieuwReknr;
+        int reknr = 1000;
+        for(IBalie balie : balies)
+        {
+            if(balie.getBank().equals(bank))
+            {
+              reknr = reknr + balies.indexOf(balie);
+              nieuwReknr++; 
+              String reknrintekst = String.valueOf(reknr) + String.valueOf(nieuwReknr);                           
+              return Integer.parseInt(reknrintekst);  
+            }
+        }
+        return -1;
     }   
     
 }

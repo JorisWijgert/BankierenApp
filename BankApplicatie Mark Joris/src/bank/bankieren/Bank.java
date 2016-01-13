@@ -34,7 +34,7 @@ public class Bank implements IBank, Serializable {
                     return -1;
                 
                 IKlant klant = getKlant(name, city);
-                nieuwReknr = OV.getNieuwRekNR();
+                nieuwReknr = OV.getNieuwRekNR(this);
                 IRekeningTbvBank account = new Rekening(nieuwReknr, klant, Money.EURO);
                 accounts.put(nieuwReknr,account);                
                 return nieuwReknr;

@@ -23,6 +23,6 @@ public interface Iovermaak extends Remote {
     
     public boolean zoeken(int destination, Money money) throws RemoteException;
     
-    public int getNieuwRekNR() throws RemoteException;    
+    public int getNieuwRekNR(IBank bank) throws RemoteException;    
     
 }

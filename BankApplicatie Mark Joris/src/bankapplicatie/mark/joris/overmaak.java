@@ -30,7 +30,7 @@ public class overmaak extends UnicastRemoteObject implements Iovermaak{
     public overmaak() throws RemoteException
     {
       balies = new ArrayList<>(); 
-      nieuwReknr = 100000000;	
+      nieuwReknr = 100000;	
     }
     
     @Override
@@ -68,15 +68,15 @@ public class overmaak extends UnicastRemoteObject implements Iovermaak{
     @Override
     public int getNieuwRekNR(IBank bank) throws RemoteException
     {
-        int reknr = 1000;
+        int reknr = 100;
         for(IBalie balie : balies)
         {
-            if(balie.getBank().equals(bank))
+            if(balie.getBank().getName().equals(bank.getName()))
             {
               reknr = reknr + balies.indexOf(balie);
               nieuwReknr++; 
               String reknrintekst = String.valueOf(reknr) + String.valueOf(nieuwReknr);                           
-              return Integer.parseInt(reknrintekst);  
+              return Integer.valueOf(reknrintekst);  
             }
         }
         return -1;

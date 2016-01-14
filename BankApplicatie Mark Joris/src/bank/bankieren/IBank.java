@@ -1,13 +1,14 @@
 package bank.bankieren;
 
 import bankapplicatie.mark.joris.Iovermaak;
+import fontys.observer.RemotePublisher;
 import fontys.util.*;
 
 /**
  * @author 871059
  * 
  */
-public interface IBank {
+public interface IBank  {
 
     /**
      * creatie van een nieuwe bankrekening met een identificerend rekeningnummer; 

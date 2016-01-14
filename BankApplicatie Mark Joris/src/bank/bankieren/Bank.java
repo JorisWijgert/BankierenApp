@@ -17,6 +17,7 @@ public class Bank implements IBank, Serializable {
 	private Map<Integer,IRekeningTbvBank> accounts;
 	private Collection<IKlant> clients;
 	private int nieuwReknr;
+        
 	private String name;
         private Iovermaak OV;
 
@@ -83,7 +84,7 @@ public class Bank implements IBank, Serializable {
                 success = OV.zoeken(destination, money);
                 
                 if (!success) // rollback
-                    source_account.muteer(money);                                
+                    source_account.muteer(money);            
                 return success;
             } catch (RemoteException ex) {
                 Logger.getLogger(Bank.class.getName()).log(Level.SEVERE, null, ex);
@@ -105,8 +106,9 @@ public class Bank implements IBank, Serializable {
         {
             boolean success;
             IRekeningTbvBank dest_account = (IRekeningTbvBank) getRekening(rekening.getNr());            
-            success = dest_account.muteer(money);            
+            success = dest_account.muteer(money);          
             return this;
         }
+
 
 }

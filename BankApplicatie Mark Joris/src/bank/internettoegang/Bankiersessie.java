@@ -7,6 +7,8 @@ import java.rmi.server.UnicastRemoteObject;
 import bank.bankieren.IBank;
 import bank.bankieren.IRekening;
 import bank.bankieren.Money;
+import fontys.observer.BasicPublisher;
+import fontys.observer.RemotePropertyListener;
 
 import fontys.util.InvalidSessionException;
 import fontys.util.NumberDoesntExistException;
@@ -19,12 +21,15 @@ public class Bankiersessie extends UnicastRemoteObject implements
     private long laatsteAanroep;
     private int reknr;
     private IBank bank;
+    private BasicPublisher basicPublisher;
 
     public Bankiersessie(int reknr, IBank bank) throws RemoteException {
         laatsteAanroep = System.currentTimeMillis();
         this.reknr = reknr;
         this.bank = bank;
-
+        String[] props = new String[1];
+        props[0] = "rekening";
+        this.basicPublisher = new BasicPublisher(props);
     }
 
     public boolean isGeldig() {
@@ -45,7 +50,8 @@ public class Bankiersessie extends UnicastRemoteObject implements
         if (!bedrag.isPositive()) {
             throw new RuntimeException("amount must be positive");
         }
-        boolean succes = bank.maakOver(reknr, bestemming, bedrag);        
+        boolean succes = bank.maakOver(reknr, bestemming, bedrag);
+        basicPublisher.inform(this, "rekening", null, reknr);
         return succes;
     }
 
@@ -70,6 +76,16 @@ public class Bankiersessie extends UnicastRemoteObject implements
     @Override
     public void logUit() throws RemoteException {
         UnicastRemoteObject.unexportObject(this, true);
+    }
+
+     @Override
+    public void addListener(RemotePropertyListener remotePropertyListener, String string) throws RemoteException {
+        basicPublisher.addListener(remotePropertyListener, string);
+    }
+
+    @Override
+    public void removeListener(RemotePropertyListener remotePropertyListener, String string) throws RemoteException {
+        basicPublisher.removeListener(remotePropertyListener, string);
     }
 
 }

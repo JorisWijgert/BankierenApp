@@ -8,19 +8,23 @@ package bank.gui;
 import bank.bankieren.Rekening;
 import bank.bankieren.IRekening;
 import bank.bankieren.Money;
+import bank.internettoegang.Bankiersessie;
 import bank.internettoegang.IBalie;
 import bank.internettoegang.IBankiersessie;
 import bankapplicatie.mark.joris.Iovermaak;
 import fontys.util.InvalidSessionException;
 import fontys.util.NumberDoesntExistException;
+import java.beans.PropertyChangeEvent;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
@@ -40,7 +44,7 @@ import javafx.scene.control.TextField;
  *
  * @author frankcoenen
  */
-<span class="nc" id="L43">public class BankierSessieController implements Observer, Initializable {</span>
+<span class="nc" id="L47">public class BankierSessieController implements Observer, Initializable{</span>
 
     @FXML
     private Hyperlink hlLogout;
@@ -64,72 +68,99 @@ import javafx.scene.control.TextField;
     private BankierClient application;
     private IBalie balie;
     private IBankiersessie sessie;
+    private luisteraar ls;
 
     public void setApp(BankierClient application, IBalie balie, IBankiersessie sessie) {
-<span class="nc" id="L69">        this.balie = balie;</span>
-<span class="nc" id="L70">        this.sessie = sessie;</span>
-<span class="nc" id="L71">        this.application = application;</span>
-<span class="nc" id="L72">        IRekening rekening = null;</span>
         try {
-<span class="nc" id="L74">            rekening = sessie.getRekening();</span>
-<span class="nc" id="L75">            Rekening yr = (Rekening)rekening;</span>
-<span class="nc" id="L76">            yr.addObserver(this);</span>
-<span class="nc" id="L77">            tfAccountNr.setText(rekening.getNr() + &quot;&quot;);</span>
-<span class="nc" id="L78">            tfBalance.setText(rekening.getSaldo() + &quot;&quot;);</span>
-<span class="nc" id="L79">            String eigenaar = rekening.getEigenaar().getNaam() + &quot; te &quot;</span>
-<span class="nc" id="L80">                    + rekening.getEigenaar().getPlaats();</span>
-<span class="nc" id="L81">            tfNameCity.setText(eigenaar);</span>
-<span class="nc" id="L82">        } catch (InvalidSessionException ex) {</span>
-<span class="nc" id="L83">            taMessage.setText(&quot;bankiersessie is verlopen&quot;);</span>
-<span class="nc" id="L84">            Logger.getLogger(BankierSessieController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L75">            this.balie = balie;</span>
+<span class="nc" id="L76">            this.sessie = sessie;</span>
+<span class="nc" id="L77">            this.application = application;</span>
+<span class="nc" id="L78">            this.ls = new luisteraar(this);</span>
+<span class="nc" id="L79">            IRekening rekening = null;</span>
+            try {
+<span class="nc" id="L81">                rekening = sessie.getRekening();</span>
+<span class="nc" id="L82">                Rekening yr = (Rekening)rekening;</span>
+<span class="nc" id="L83">                yr.addObserver(this);</span>
+<span class="nc" id="L84">                balie.addListener(ls, &quot;rekening&quot;);</span>
+<span class="nc" id="L85">                sessie.addListener(ls, &quot;rekening&quot;);</span>
+<span class="nc" id="L86">                tfAccountNr.setText(rekening.getNr() + &quot;&quot;);</span>
+<span class="nc" id="L87">                tfBalance.setText(rekening.getSaldo() + &quot;&quot;);</span>
+<span class="nc" id="L88">                String eigenaar = rekening.getEigenaar().getNaam() + &quot; te &quot;</span>
+<span class="nc" id="L89">                        + rekening.getEigenaar().getPlaats();</span>
+<span class="nc" id="L90">                tfNameCity.setText(eigenaar);</span>
+<span class="nc" id="L91">            } catch (InvalidSessionException ex) {</span>
+<span class="nc" id="L92">                taMessage.setText(&quot;bankiersessie is verlopen&quot;);</span>
+<span class="nc" id="L93">                Logger.getLogger(BankierSessieController.class.getName()).log(Level.SEVERE, null, ex);</span>
+                
+<span class="nc" id="L95">            } catch (RemoteException ex) {</span>
+<span class="nc" id="L96">                taMessage.setText(&quot;verbinding verbroken&quot;);</span>
+<span class="nc" id="L97">                Logger.getLogger(BankierSessieController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L98">            }</span>
+<span class="nc" id="L99">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L100">            Logger.getLogger(BankierSessieController.class.getName()).log(Level.SEVERE, null, ex);</span>
 
-<span class="nc" id="L86">        } catch (RemoteException ex) {</span>
-<span class="nc" id="L87">            taMessage.setText(&quot;verbinding verbroken&quot;);</span>
-<span class="nc" id="L88">            Logger.getLogger(BankierSessieController.class.getName()).log(Level.SEVERE, null, ex);</span>
-<span class="nc" id="L89">        }</span>
-<span class="nc" id="L90">    }</span>
+<span class="nc" id="L102">        }</span>
+<span class="nc" id="L103">    }</span>
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-<span class="nc" id="L97">    }</span>
+<span class="nc" id="L110">    }</span>
 
     @FXML
     private void logout(ActionEvent event) {
         try {
-<span class="nc" id="L102">            sessie.logUit();</span>
-<span class="nc" id="L103">            application.gotoLogin(balie, &quot;&quot;);</span>
-<span class="nc" id="L104">        } catch (RemoteException e) {</span>
-<span class="nc" id="L105">            e.printStackTrace();</span>
-<span class="nc" id="L106">        }</span>
-<span class="nc" id="L107">    }</span>
+<span class="nc" id="L115">            sessie.logUit();</span>
+<span class="nc" id="L116">            application.gotoLogin(balie, &quot;&quot;);</span>
+<span class="nc" id="L117">        } catch (RemoteException e) {</span>
+<span class="nc" id="L118">            e.printStackTrace();</span>
+<span class="nc" id="L119">        }</span>
+<span class="nc" id="L120">    }</span>
 
     @FXML
     private void transfer(ActionEvent event) {
         try {
-<span class="nc" id="L112">            int from = Integer.parseInt(tfAccountNr.getText());</span>
-<span class="nc" id="L113">            int to = Integer.parseInt(tfToAccountNr.getText());</span>
-<span class="nc bnc" id="L114" title="All 2 branches missed.">            if (from == to) {</span>
-<span class="nc" id="L115">                taMessage.setText(&quot;can't transfer money to your own account&quot;);</span>
+<span class="nc" id="L125">            int from = Integer.parseInt(tfAccountNr.getText());</span>
+<span class="nc" id="L126">            int to = Integer.parseInt(tfToAccountNr.getText());</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">            if (from == to) {</span>
+<span class="nc" id="L128">                taMessage.setText(&quot;can't transfer money to your own account&quot;);</span>
             }
-<span class="nc" id="L117">            long centen = (long) (Double.parseDouble(tfAmount.getText()) * 100);</span>
-<span class="nc" id="L118">            sessie.maakOver(to, new Money(centen, Money.EURO));</span>
-<span class="nc" id="L119">        } catch (RemoteException e1) {</span>
-<span class="nc" id="L120">            e1.printStackTrace();</span>
-<span class="nc" id="L121">            taMessage.setText(&quot;verbinding verbroken&quot;);</span>
-<span class="nc" id="L122">        } catch (NumberDoesntExistException | InvalidSessionException e1) {</span>
-<span class="nc" id="L123">            e1.printStackTrace();</span>
-<span class="nc" id="L124">            taMessage.setText(e1.getMessage());</span>
-<span class="nc" id="L125">        }</span>
-<span class="nc" id="L126">    }</span>
+<span class="nc" id="L130">            long centen = (long) (Double.parseDouble(tfAmount.getText()) * 100);</span>
+<span class="nc" id="L131">            sessie.maakOver(to, new Money(centen, Money.EURO));</span>
+<span class="nc" id="L132">        } catch (RemoteException e1) {</span>
+<span class="nc" id="L133">            e1.printStackTrace();</span>
+<span class="nc" id="L134">            taMessage.setText(&quot;verbinding verbroken&quot;);</span>
+<span class="nc" id="L135">        } catch (NumberDoesntExistException | InvalidSessionException e1) {</span>
+<span class="nc" id="L136">            e1.printStackTrace();</span>
+<span class="nc" id="L137">            taMessage.setText(e1.getMessage());</span>
+<span class="nc" id="L138">        }</span>
+<span class="nc" id="L139">    }</span>
 
     @Override
     public void update(Observable o, Object arg) 
     {
-<span class="nc" id="L131">         IRekening rekening = (IRekening) arg;</span>
-<span class="nc" id="L132">         tfBalance.setText(rekening.getSaldo() + &quot;&quot;);</span>
-<span class="nc" id="L133">    }</span>
+<span class="nc" id="L144">         IRekening rekening = (IRekening) arg;</span>
+<span class="nc" id="L145">         tfBalance.setText(rekening.getSaldo() + &quot;&quot;);</span>
+<span class="nc" id="L146">    }</span>
+    
+    public void saldoupdate()
+    {
+        try {  
+<span class="nc" id="L151">            tfBalance.setText(sessie.getRekening().getSaldo() + &quot;&quot;);</span>
+<span class="nc" id="L152">        }  catch (RemoteException ex) {</span>
+<span class="nc" id="L153">            Logger.getLogger(BankierSessieController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L154">        } catch (InvalidSessionException ex) {</span>
+<span class="nc" id="L155">            Logger.getLogger(BankierSessieController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L156">        }</span>
+<span class="nc" id="L157">    }</span>
+
+    
+    
+    public IBankiersessie getsessie()
+    {
+<span class="nc" id="L163">        return sessie;</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

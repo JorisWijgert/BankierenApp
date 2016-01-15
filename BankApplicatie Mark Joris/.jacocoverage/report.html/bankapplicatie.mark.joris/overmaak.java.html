@@ -5,7 +5,9 @@
  */
 package bankapplicatie.mark.joris;
 
+import bank.bankieren.IBank;
 import bank.bankieren.IRekening;
+import bank.bankieren.Money;
 import bank.internettoegang.IBalie;
 import java.io.FileInputStream;
 import java.rmi.Naming;
@@ -19,57 +21,58 @@ import java.util.Properties;
  *
  * @author Slashy
  */
-public class overmaak extends UnicastRemoteObject implements Iovermaak{
-    
+public class overmaak extends UnicastRemoteObject implements Iovermaak {
+
     List&lt;IBalie&gt; balies;
     private int nieuwReknr;
-    
-    
-    public overmaak() throws RemoteException
-<span class="fc" id="L29">    {</span>
-<span class="fc" id="L30">      balies = new ArrayList&lt;&gt;(); </span>
-<span class="fc" id="L31">      nieuwReknr = 100000000;	</span>
-<span class="fc" id="L32">    }</span>
-    
-    @Override
-    public void addbank(String nameBank) throws RemoteException
-    {
-        try {
-<span class="nc" id="L38">            FileInputStream in = new FileInputStream(nameBank+&quot;.props&quot;);</span>
-<span class="nc" id="L39">            Properties props = new Properties();</span>
-<span class="nc" id="L40">            props.load(in);</span>
-<span class="nc" id="L41">            String rmiBalie = props.getProperty(&quot;balie&quot;);</span>
-<span class="nc" id="L42">            in.close();</span>
-<span class="nc" id="L43">            IBalie balie = (IBalie) Naming.lookup(&quot;rmi://&quot; + rmiBalie);</span>
-<span class="nc" id="L44">            balies.add(balie);</span>
 
-<span class="nc" id="L46">            } catch (Exception exc) {</span>
-<span class="nc" id="L47">                exc.printStackTrace();</span>
-               
-<span class="nc" id="L49">            }</span>
-<span class="nc" id="L50">    }</span>
-    
+<span class="fc" id="L29">    public overmaak() throws RemoteException {</span>
+<span class="fc" id="L30">        balies = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L31">        nieuwReknr = 100000;</span>
+<span class="fc" id="L32">    }</span>
+
     @Override
-    public IRekening zoeken(int destination) throws RemoteException
-    {
-<span class="pc bpc" id="L55" title="1 of 2 branches missed.">        for (IBalie balie : balies)</span>
-        {
-<span class="nc" id="L57">           IRekening rekening = balie.getBank().getRekening(destination);</span>
-<span class="nc bnc" id="L58" title="All 2 branches missed.">           if(rekening != null)</span>
-           {      
-               
-<span class="nc" id="L61">               return rekening;</span>
-           }
-<span class="nc" id="L63">        }</span>
-<span class="fc" id="L64">        return null;</span>
+    public void addbank(String nameBank) throws RemoteException {
+        try {
+<span class="fc" id="L37">            FileInputStream in = new FileInputStream(nameBank + &quot;.props&quot;);</span>
+<span class="fc" id="L38">            Properties props = new Properties();</span>
+<span class="fc" id="L39">            props.load(in);</span>
+<span class="fc" id="L40">            String rmiBalie = props.getProperty(&quot;balie&quot;);</span>
+<span class="fc" id="L41">            in.close();</span>
+<span class="fc" id="L42">            IBalie balie = (IBalie) Naming.lookup(&quot;rmi://&quot; + rmiBalie);</span>
+<span class="fc" id="L43">            balies.add(balie);</span>
+
+<span class="nc" id="L45">        } catch (Exception exc) {</span>
+<span class="nc" id="L46">            exc.printStackTrace();</span>
+
+<span class="fc" id="L48">        }</span>
+<span class="fc" id="L49">    }</span>
+
+    @Override
+    public boolean zoeken(int destination, Money money) throws RemoteException {
+<span class="fc" id="L53">        boolean succes = false;</span>
+<span class="fc" id="L54">        String nummer = String.valueOf(destination);</span>
+<span class="fc" id="L55">        IBalie balie = balies.get(Integer.parseInt(nummer.substring(1, 3)));</span>
+<span class="fc" id="L56">        IRekening rekening = balie.getBank().getRekening(destination);</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">        if (rekening != null) {</span>
+<span class="nc" id="L58">            succes = balie.ontvangen(rekening, money);</span>
+        }
+<span class="fc" id="L60">        return succes;</span>
     }
-    
+
     @Override
-    public int getNieuwRekNR() throws RemoteException
-    {
-<span class="fc" id="L70">        nieuwReknr++;</span>
-<span class="fc" id="L71">        return nieuwReknr;</span>
-    }   
-    
+    public int getNieuwRekNR(IBank bank) throws RemoteException {
+<span class="fc" id="L65">        int reknr = 100;</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        for (IBalie balie : balies) {</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">            if (balie.getBank().getName().equals(bank.getName())) {</span>
+<span class="fc" id="L68">                reknr = reknr + balies.indexOf(balie);</span>
+<span class="fc" id="L69">                nieuwReknr++;</span>
+<span class="fc" id="L70">                String reknrintekst = String.valueOf(reknr) + String.valueOf(nieuwReknr);</span>
+<span class="fc" id="L71">                return Integer.valueOf(reknrintekst);</span>
+            }
+<span class="nc" id="L73">        }</span>
+<span class="fc" id="L74">        return -1;</span>
+    }
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

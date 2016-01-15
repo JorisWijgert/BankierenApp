@@ -4,6 +4,11 @@ import java.rmi.*;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import bank.bankieren.*;
+import fontys.observer.BasicPublisher;
+import fontys.observer.RemotePropertyListener;
+import fontys.util.NumberDoesntExistException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Balie extends UnicastRemoteObject implements IBalie {
 
@@ -12,66 +17,92 @@ public class Balie extends UnicastRemoteObject implements IBalie {
 	private HashMap&lt;String, ILoginAccount&gt; loginaccounts;
 	//private Collection&lt;IBankiersessie&gt; sessions;
 	private java.util.Random random;
+        private BasicPublisher basicPublisher;
 
-<span class="fc" id="L16">	public Balie(IBank bank) throws RemoteException {</span>
-<span class="fc" id="L17">		this.bank = bank;</span>
-<span class="fc" id="L18">		loginaccounts = new HashMap&lt;String, ILoginAccount&gt;();</span>
+<span class="fc" id="L22">	public Balie(IBank bank) throws RemoteException {</span>
+<span class="fc" id="L23">		this.bank = bank;</span>
+<span class="fc" id="L24">		loginaccounts = new HashMap&lt;String, ILoginAccount&gt;();</span>
 		//sessions = new HashSet&lt;IBankiersessie&gt;();
-<span class="fc" id="L20">		random = new Random();</span>
-<span class="fc" id="L21">	}</span>
+<span class="fc" id="L26">		random = new Random();</span>
+<span class="fc" id="L27">                String[] props = new String[1];</span>
+<span class="fc" id="L28">                props[0] = &quot;rekening&quot;;</span>
+<span class="fc" id="L29">                this.basicPublisher = new BasicPublisher(props);</span>
+<span class="fc" id="L30">	}</span>
 
 	public String openRekening(String naam, String plaats, String wachtwoord) {
-<span class="fc bfc" id="L24" title="All 2 branches covered.">		if (naam.equals(&quot;&quot;))</span>
-<span class="fc" id="L25">			return null;</span>
-<span class="fc bfc" id="L26" title="All 2 branches covered.">		if (plaats.equals(&quot;&quot;))</span>
-<span class="fc" id="L27">			return null;</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">		if (naam.equals(&quot;&quot;))</span>
+<span class="fc" id="L34">			return null;</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">		if (plaats.equals(&quot;&quot;))</span>
+<span class="fc" id="L36">			return null;</span>
 
-<span class="fc bfc" id="L29" title="All 4 branches covered.">		if (wachtwoord.length() &lt; 4 || wachtwoord.length() &gt; 8)</span>
-<span class="fc" id="L30">			return null;</span>
+<span class="fc bfc" id="L38" title="All 4 branches covered.">		if (wachtwoord.length() &lt; 4 || wachtwoord.length() &gt; 8)</span>
+<span class="fc" id="L39">			return null;</span>
 
-<span class="fc" id="L32">		int nr = bank.openRekening(naam, plaats);</span>
-<span class="pc bpc" id="L33" title="1 of 2 branches missed.">		if (nr == -1)</span>
-<span class="nc" id="L34">			return null;</span>
+<span class="fc" id="L41">		int nr = bank.openRekening(naam, plaats);</span>
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">		if (nr == -1)</span>
+<span class="fc" id="L43">			return null;</span>
 
-<span class="fc" id="L36">		String accountname = generateId(8);</span>
-<span class="pc bpc" id="L37" title="1 of 2 branches missed.">		while (loginaccounts.containsKey(accountname))</span>
-<span class="nc" id="L38">			accountname = generateId(8);</span>
-<span class="fc" id="L39">		loginaccounts.put(accountname, new LoginAccount(accountname,</span>
+<span class="nc" id="L45">		String accountname = generateId(8);</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">		while (loginaccounts.containsKey(accountname))</span>
+<span class="nc" id="L47">			accountname = generateId(8);</span>
+<span class="nc" id="L48">		loginaccounts.put(accountname, new LoginAccount(accountname,</span>
 				wachtwoord, nr));
 
-<span class="fc" id="L42">		return accountname;</span>
+<span class="nc" id="L51">		return accountname;</span>
 	}
 
 	public IBankiersessie logIn(String accountnaam, String wachtwoord)
 			throws RemoteException {
-<span class="fc" id="L47">		ILoginAccount loginaccount = loginaccounts.get(accountnaam);</span>
-<span class="fc bfc" id="L48" title="All 2 branches covered.">		if (loginaccount == null)</span>
-<span class="fc" id="L49">			return null;</span>
-<span class="pc bpc" id="L50" title="1 of 2 branches missed.">		if (loginaccount.checkWachtwoord(wachtwoord)) {</span>
-<span class="fc" id="L51">			IBankiersessie sessie = new Bankiersessie(loginaccount</span>
-<span class="fc" id="L52">					.getReknr(), bank);</span>
+<span class="fc" id="L56">		ILoginAccount loginaccount = loginaccounts.get(accountnaam);</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">		if (loginaccount == null)</span>
+<span class="fc" id="L58">			return null;</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">		if (loginaccount.checkWachtwoord(wachtwoord)) {</span>
+<span class="nc" id="L60">			IBankiersessie sessie = new Bankiersessie(loginaccount</span>
+<span class="nc" id="L61">					.getReknr(), bank);</span>
 			
-<span class="fc" id="L54">		 	return sessie;</span>
+<span class="nc" id="L63">		 	return sessie;</span>
 		}
-<span class="nc" id="L56">		else return null;</span>
+<span class="nc" id="L65">		else return null;</span>
 	}
 
 	private static final String CHARS = &quot;abcdefghijklmnopqrstuvwxyz0123456789&quot;;
 
 	private String generateId(int x) {
-<span class="fc" id="L62">		StringBuilder s = new StringBuilder();</span>
-<span class="fc bfc" id="L63" title="All 2 branches covered.">		for (int i = 0; i &lt; x; i++) {</span>
-<span class="fc" id="L64">			int rand = random.nextInt(36);</span>
-<span class="fc" id="L65">			s.append(CHARS.charAt(rand));</span>
+<span class="nc" id="L71">		StringBuilder s = new StringBuilder();</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">		for (int i = 0; i &lt; x; i++) {</span>
+<span class="nc" id="L73">			int rand = random.nextInt(36);</span>
+<span class="nc" id="L74">			s.append(CHARS.charAt(rand));</span>
 		}
-<span class="fc" id="L67">		return s.toString();</span>
+<span class="nc" id="L76">		return s.toString();</span>
 	}
         
         public IBank getBank()
         {
-<span class="nc" id="L72">            return bank;</span>
+<span class="fc" id="L81">            return bank;</span>
+        }
+        
+        public boolean ontvangen(IRekening rekening, Money money)
+        {
+            IBank succes;
+            try {
+<span class="nc" id="L88">                succes = bank.ontvangen(rekening, money);</span>
+<span class="nc" id="L89">                basicPublisher.inform(this, &quot;rekening&quot;, null, rekening.getNr());</span>
+<span class="nc" id="L90">                return true;</span>
+<span class="nc" id="L91">            } catch (NumberDoesntExistException ex) {</span>
+<span class="nc" id="L92">                Logger.getLogger(Balie.class.getName()).log(Level.SEVERE, null, ex);</span>
+            }
+<span class="nc" id="L94">            return false;</span>
+            
         }
 
+    @Override
+    public void addListener(RemotePropertyListener remotePropertyListener, String string) throws RemoteException {
+<span class="nc" id="L100">        basicPublisher.addListener(remotePropertyListener, string);</span>
+<span class="nc" id="L101">    }</span>
 
+    @Override
+    public void removeListener(RemotePropertyListener remotePropertyListener, String string) throws RemoteException {
+<span class="nc" id="L105">        basicPublisher.removeListener(remotePropertyListener, string);</span>
+<span class="nc" id="L106">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

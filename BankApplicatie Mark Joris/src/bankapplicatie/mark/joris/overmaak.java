@@ -21,23 +21,20 @@ import java.util.Properties;
  *
  * @author Slashy
  */
-public class overmaak extends UnicastRemoteObject implements Iovermaak{
-    
+public class overmaak extends UnicastRemoteObject implements Iovermaak {
+
     List<IBalie> balies;
     private int nieuwReknr;
-    
-    
-    public overmaak() throws RemoteException
-    {
-      balies = new ArrayList<>(); 
-      nieuwReknr = 100000;	
+
+    public overmaak() throws RemoteException {
+        balies = new ArrayList<>();
+        nieuwReknr = 100000;
     }
-    
+
     @Override
-    public void addbank(String nameBank) throws RemoteException
-    {
+    public void addbank(String nameBank) throws RemoteException {
         try {
-            FileInputStream in = new FileInputStream(nameBank+".props");
+            FileInputStream in = new FileInputStream(nameBank + ".props");
             Properties props = new Properties();
             props.load(in);
             String rmiBalie = props.getProperty("balie");
@@ -45,41 +42,36 @@ public class overmaak extends UnicastRemoteObject implements Iovermaak{
             IBalie balie = (IBalie) Naming.lookup("rmi://" + rmiBalie);
             balies.add(balie);
 
-            } catch (Exception exc) {
-                exc.printStackTrace();
-               
-            }
+        } catch (Exception exc) {
+            exc.printStackTrace();
+
+        }
     }
-    
+
     @Override
-    public boolean zoeken(int destination, Money money) throws RemoteException
-    {
+    public boolean zoeken(int destination, Money money) throws RemoteException {
         boolean succes = false;
         String nummer = String.valueOf(destination);
-        IBalie balie = balies.get(Integer.parseInt(nummer.substring(1, 3)));        
+        IBalie balie = balies.get(Integer.parseInt(nummer.substring(1, 3)));
         IRekening rekening = balie.getBank().getRekening(destination);
-           if(rekening != null)
-           {      
-               succes = balie.ontvangen(rekening, money);               
-           }
-        return succes;        
+        if (rekening != null) {
+            succes = balie.ontvangen(rekening, money);
+        }
+        return succes;
     }
-    
+
     @Override
-    public int getNieuwRekNR(IBank bank) throws RemoteException
-    {
+    public int getNieuwRekNR(IBank bank) throws RemoteException {
         int reknr = 100;
-        for(IBalie balie : balies)
-        {
-            if(balie.getBank().getName().equals(bank.getName()))
-            {
-              reknr = reknr + balies.indexOf(balie);
-              nieuwReknr++; 
-              String reknrintekst = String.valueOf(reknr) + String.valueOf(nieuwReknr);                           
-              return Integer.valueOf(reknrintekst);  
+        for (IBalie balie : balies) {
+            if (balie.getBank().getName().equals(bank.getName())) {
+                reknr = reknr + balies.indexOf(balie);
+                nieuwReknr++;
+                String reknrintekst = String.valueOf(reknr) + String.valueOf(nieuwReknr);
+                return Integer.valueOf(reknrintekst);
             }
         }
         return -1;
-    }   
-    
+    }
+
 }

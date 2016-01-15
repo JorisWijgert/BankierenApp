@@ -5,9 +5,11 @@
  */
 package bank.bankieren;
 
+import bank.server.BalieServer;
 import bankapplicatie.mark.joris.Iovermaak;
 import bankapplicatie.mark.joris.overmaak;
 import fontys.util.NumberDoesntExistException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,7 +38,12 @@ public class BankTest {
         try {
             OV = new overmaak();
             bank = new Bank("Rabobank", OV);
+            BalieServer bs = new BalieServer();
+            bs.startBalie(bank.getName());
+            OV.addbank(bank.getName());
         } catch (RemoteException ex) {
+            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NotBoundException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -80,13 +87,13 @@ public class BankTest {
      */
     @Test
     public void testOpenRekening() {
-        assertEquals("Rekeningnummer is niet goed aangemaakt", 100000001, bank.openRekening("Joris", "Oploo"));
+        assertEquals("Rekeningnummer is niet goed aangemaakt", 100100001, bank.openRekening("Joris", "Oploo"));
         assertEquals("Rekeningnummer is onbedoeld goed aangemaakt", -1, bank.openRekening("", "Oploo"));
         assertEquals("Rekeningnummer is onbedoeld goed aangemaakt", -1, bank.openRekening("Joris", ""));
-        assertEquals("Rekeningnummer is niet goed aangemaakt", 100000002, bank.openRekening("Joris", "Oploo"));
-        assertEquals("Rekeningnummer is niet goed aangemaakt", 100000003, bank.openRekening("Mark", "Oploo"));
-        assertEquals("Rekeningnummer is niet goed aangemaakt", 100000004, bank.openRekening("Joris", "Castenray"));
-        assertEquals("Rekeningnummer is niet goed aangemaakt", 100000005, bank.openRekening("Mark", "Castenray"));
+        assertEquals("Rekeningnummer is niet goed aangemaakt", 100100002, bank.openRekening("Joris", "Oploo"));
+        assertEquals("Rekeningnummer is niet goed aangemaakt", 100100003, bank.openRekening("Mark", "Oploo"));
+        assertEquals("Rekeningnummer is niet goed aangemaakt", 100100004, bank.openRekening("Joris", "Castenray"));
+        assertEquals("Rekeningnummer is niet goed aangemaakt", 100100005, bank.openRekening("Mark", "Castenray"));
     }
 
     @Test
@@ -145,13 +152,13 @@ public class BankTest {
         Money geld3 = new Money(40, Money.EURO);
         Money geld4 = new Money(11000, Money.EURO);
 
-        assertTrue("niet overgemaakt", bank.maakOver(100000001, 100000002, geld1));
-        assertTrue("niet overgemaakt", bank.maakOver(100000001, 100000003, geld2));
-        assertTrue("niet overgemaakt", bank.maakOver(100000002, 100000003, geld3));
-        assertTrue("niet overgemaakt", bank.maakOver(100000003, 100000002, geld1));
-        assertTrue("niet overgemaakt", bank.maakOver(100000003, 100000001, geld2));
-        assertTrue("niet overgemaakt", bank.maakOver(100000002, 100000001, geld3));
-        assertFalse("toch overgemaakt", bank.maakOver(100000002, 100000001, geld4));
+        assertTrue("niet overgemaakt", bank.maakOver(100100001, 100100002, geld1));
+        assertTrue("niet overgemaakt", bank.maakOver(100100001, 100100003, geld2));
+        assertTrue("niet overgemaakt", bank.maakOver(100100002, 100100003, geld3));
+        assertTrue("niet overgemaakt", bank.maakOver(100100003, 100100002, geld1));
+        assertTrue("niet overgemaakt", bank.maakOver(100100003, 100100001, geld2));
+        assertTrue("niet overgemaakt", bank.maakOver(100100002, 100100001, geld3));
+        assertFalse("toch overgemaakt", bank.maakOver(100100002, 100100001, geld4));
 
     }
 }

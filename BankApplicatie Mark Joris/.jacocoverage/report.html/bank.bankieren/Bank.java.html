@@ -3,7 +3,6 @@
 import bankapplicatie.mark.joris.Iovermaak;
 import fontys.util.*;
 import java.io.Serializable;
-
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.logging.Level;
@@ -18,6 +17,7 @@ public class Bank implements IBank, Serializable {
 	private Map&lt;Integer,IRekeningTbvBank&gt; accounts;
 	private Collection&lt;IKlant&gt; clients;
 	private int nieuwReknr;
+        
 	private String name;
         private Iovermaak OV;
 
@@ -35,7 +35,7 @@ public class Bank implements IBank, Serializable {
 <span class="fc" id="L35">                    return -1;</span>
                 
 <span class="fc" id="L37">                IKlant klant = getKlant(name, city);</span>
-<span class="fc" id="L38">                nieuwReknr = OV.getNieuwRekNR();</span>
+<span class="fc" id="L38">                nieuwReknr = OV.getNieuwRekNR(this);</span>
 <span class="fc" id="L39">                IRekeningTbvBank account = new Rekening(nieuwReknr, klant, Money.EURO);</span>
 <span class="fc" id="L40">                accounts.put(nieuwReknr,account);                </span>
 <span class="fc" id="L41">                return nieuwReknr;</span>
@@ -80,35 +80,36 @@ public class Bank implements IBank, Serializable {
                 {
 <span class="nc" id="L81">                   return false; </span>
                 }
-                    
+<span class="fc" id="L83">                System.out.println(&quot;kaas&quot;);                </span>
+<span class="fc" id="L84">                success = OV.zoeken(destination, money);</span>
                 
-                
-<span class="fc" id="L86">                System.out.println(&quot;kaas&quot;);</span>
-                
-<span class="fc" id="L88">                IRekeningTbvBank dest_account = (IRekeningTbvBank) OV.zoeken(destination);</span>
-<span class="pc bpc" id="L89" title="1 of 2 branches missed.">                if (dest_account == null)</span>
-<span class="fc" id="L90">                    throw new NumberDoesntExistException(&quot;account &quot; + destination</span>
-                            + &quot; unknown at &quot; + name);
-<span class="nc" id="L92">                success = dest_account.muteer(money);</span>
-                
-<span class="nc bnc" id="L94" title="All 2 branches missed.">                if (!success) // rollback</span>
-<span class="nc" id="L95">                    source_account.muteer(money);                                </span>
-<span class="nc" id="L96">                return success;</span>
-<span class="nc" id="L97">            } catch (RemoteException ex) {</span>
-<span class="nc" id="L98">                Logger.getLogger(Bank.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">                if (!success) // rollback</span>
+<span class="fc" id="L87">                    source_account.muteer(money);            </span>
+<span class="fc" id="L88">                return success;</span>
+<span class="nc" id="L89">            } catch (RemoteException ex) {</span>
+<span class="nc" id="L90">                Logger.getLogger(Bank.class.getName()).log(Level.SEVERE, null, ex);</span>
             }
-<span class="nc" id="L100">            return false;</span>
+<span class="nc" id="L92">            return false;</span>
 	}
 
 	@Override
 	public String getName() {
-<span class="fc" id="L105">		return name;</span>
+<span class="fc" id="L97">		return name;</span>
 	}
         
         @Override
         public Iovermaak getovermaak() {
-<span class="nc" id="L110">		return OV;</span>
+<span class="nc" id="L102">		return OV;</span>
 	}
+        
+        public Bank ontvangen(IRekening rekening, Money money) throws NumberDoesntExistException
+        {
+            boolean success;
+<span class="nc" id="L108">            IRekeningTbvBank dest_account = (IRekeningTbvBank) getRekening(rekening.getNr());            </span>
+<span class="nc" id="L109">            success = dest_account.muteer(money);          </span>
+<span class="nc" id="L110">            return this;</span>
+        }
+
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

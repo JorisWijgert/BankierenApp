@@ -8,10 +8,12 @@ package bank.internettoegang;
 import bank.bankieren.Bank;
 import bank.bankieren.IBank;
 import bank.bankieren.Money;
+import bank.server.BalieServer;
 import bankapplicatie.mark.joris.Iovermaak;
 import bankapplicatie.mark.joris.overmaak;
 import fontys.util.InvalidSessionException;
 import fontys.util.NumberDoesntExistException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,9 +41,15 @@ public class BankiersessieTest {
         try {
             Iovermaak OV = new overmaak();
             bank = new Bank("Rabobank", OV);
+            BalieServer bs = new BalieServer();
+            bs.startBalie(bank.getName());
+            OV.addbank("Rabobank");
             bank.openRekening("Joris", "Oploo");
             bank.openRekening("Mark", "Castenray");
+            
         } catch (RemoteException ex) {
+            Logger.getLogger(BankiersessieTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NotBoundException ex) {
             Logger.getLogger(BankiersessieTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -90,7 +98,7 @@ public class BankiersessieTest {
 
     @Test
     public void testMaakOver() throws InterruptedException, NumberDoesntExistException, InvalidSessionException, RemoteException {
-        bankiersessie.maakOver(100100001, new Money(1200, Money.EURO));
+        bankiersessie.maakOver(100100002, new Money(1200, Money.EURO));
     }
 
     @Test

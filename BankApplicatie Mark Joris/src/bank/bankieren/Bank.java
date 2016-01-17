@@ -79,12 +79,12 @@ public class Bank implements IBank, Serializable {
                 if (!success)
                 {
                    return false; 
-                }
-                System.out.println("kaas");                
-                success = OV.zoeken(destination, money);
-                
-                if (!success) // rollback
-                    source_account.muteer(money);            
+                }                                               
+                success = OV.zoeken(destination, money);                
+                if (!success)
+                {
+                  source_account.muteer(money);  
+                }                                
                 return success;
             } catch (RemoteException ex) {
                 Logger.getLogger(Bank.class.getName()).log(Level.SEVERE, null, ex);

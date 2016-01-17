@@ -35,6 +35,15 @@ public class BankTest {
 
     @BeforeClass
     public static void setUpClass() {
+        
+    }
+
+    @AfterClass
+    public static void tearDownClass() {
+    }
+
+    @Before
+    public void setUp() {
         try {
             OV = new overmaak();
             bank = new Bank("Rabobank", OV);
@@ -46,14 +55,6 @@ public class BankTest {
         } catch (NotBoundException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
     }
 
     @After
@@ -98,9 +99,9 @@ public class BankTest {
 
     @Test
     public void testGetRekening() {
-        IRekening testRekening = new Rekening(100000001, new Klant("Joris", "Oploo"), "Euro");
+        IRekening testRekening = new Rekening(100100001, new Klant("Joris", "Oploo"), "Euro");
         bank.openRekening("Joris", "Oploo");
-        assertTrue("Rekeningen wordt niet goed opgehaald", testRekening.equals(bank.getRekening(100000001)));
+        assertTrue("Rekeningen wordt niet goed opgehaald", testRekening.equals(bank.getRekening(100100001)));
     }
 
     @Test(expected = RuntimeException.class)
@@ -161,4 +162,5 @@ public class BankTest {
         assertFalse("toch overgemaakt", bank.maakOver(100100002, 100100001, geld4));
 
     }
+    
 }

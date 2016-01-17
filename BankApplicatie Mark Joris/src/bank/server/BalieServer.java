@@ -38,6 +38,7 @@ public class BalieServer extends Application {
     private final double MINIMUM_WINDOW_WIDTH = 600.0;
     private final double MINIMUM_WINDOW_HEIGHT = 200.0;
     private String nameBank;
+    private IBalie balie;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -77,7 +78,7 @@ public class BalieServer extends Application {
                 Bank bank = new Bank(nameBank, OM);
                                
                 //java.rmi.registry.LocateRegistry.createRegistry(port);
-                IBalie balie = new Balie(bank);               
+                balie = new Balie(bank);               
                 Naming.rebind(nameBank, balie);
                 OM.addbank(nameBank); 
                 return true;
@@ -125,5 +126,10 @@ public class BalieServer extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+    }
+    
+    public IBalie getbalie()
+    {
+        return balie;
     }
 }
